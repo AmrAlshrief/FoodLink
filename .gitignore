@@ -1,0 +1,96 @@
+# .NET
+bin/
+obj/
+*.user
+*.suo
+*.db
+*.db-journal
+*.log
+
+# Visual Studio
+.vs/
+.vscode/settings.json
+.vscode/launch.json
+
+# Environment files
+.env
+.env.local
+.env.production
+
+# Database files
+*.sqlite
+*.db
+
+# Logs
+logs/
+*.log
+
+# Temporary files
+*.tmp
+*.temp
+
+# OS generated files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# NuGet packages
+packages/
+
+# Rider
+.idea/
+
+# Build results
+[Dd]ebug/
+[Rr]elease/
+x64/
+x86/
+[Ww][Ii][Nn]32/
+[Aa][Rr][Mm]/
+[Aa][Rr][Mm]64/
+bld/
+[Bb]in/
+[Oo]bj/
+[Ll]og/
+
+# Test results
+TestResults/
+
+# JetBrains Rider
+.idea/
+
+# ReSharper
+_ReSharper*/
+*.[Rr]e[Ss]harper
+*.DotSettings.user
+
+# TeamCity
+_TeamCity*
+
+# DotCover
+*.dotCover
+
+# AppVeyor
+appveyor.yml
+
+# MyGet
+BuildTools/MyGet/
+
+# Backup files
+*.bak
+
+# Azure
+.publishsettings
+
+# Windows Azure
+csx/
+*.publishsettings
+orleans.codegen.cs
+
+# Since there are API keys in the config, ignore appsettings.json
+appsettings.json
+appsettings.*.json

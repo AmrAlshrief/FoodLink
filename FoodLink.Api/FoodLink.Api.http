@@ -1,0 +1,41 @@
+@Address = http://localhost:5080
+@AuthToken = your_jwt_token_here
+
+### Create a Donation
+POST {{Address}}/api/donations
+Content-Type: application/json
+Authorization: Bearer {{AuthToken}}
+
+{
+  "businessId": "550e8400-e29b-41d4-a716-446655440000",
+  "title": "Fresh Vegetables Donation",
+  "description": "Fresh vegetables from our farm, perfect for charitable organizations",
+  "expiryDate": "2026-04-20T10:00:00Z",
+  "items": [
+    {
+      "name": "Carrots",
+      "quantity": 50,
+      "unit": "kg"
+    },
+    {
+      "name": "Tomatoes",
+      "quantity": 30,
+      "unit": "kg"
+    },
+    {
+      "name": "Onions",
+      "quantity": 25,
+      "unit": "kg"
+    }
+  ]
+}
+
+### Get All Active Donations
+GET {{Address}}/api/donations
+Accept: application/json
+Authorization: Bearer {{AuthToken}}
+
+### Get Donation by ID
+GET {{Address}}/api/donations/550e8400-e29b-41d4-a716-446655440001
+Accept: application/json
+Authorization: Bearer {{AuthToken}}
