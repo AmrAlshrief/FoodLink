@@ -6,4 +6,5 @@ public interface IDonationService
     Task<Guid> CreateDonationAsync(CreateDonationRequest request);
     Task<List<DonationResponse>> GetAllActiveDonationsAsync();
     Task<DonationResponse?> GetDonationByIdAsync(Guid id);
+    Task UpdateDonationAsync(UpdateDonationRequest request);
 }

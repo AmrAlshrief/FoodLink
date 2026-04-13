@@ -7,6 +7,8 @@ namespace FoodLink.Domain.Entities;
 public class Reservation : AuditableEntity
 {
     public Guid CharityId { get; private set; }
+    public Guid DonationId { get; private set; }
+    
     public ReservationStatus Status { get; private set; }
     public DateTime? PickedUpAt { get; private set; }
 
@@ -15,18 +17,22 @@ public class Reservation : AuditableEntity
 
     private Reservation() { }
 
-    public Reservation(Guid charityId) : base(Guid.NewGuid())
+    public Reservation(Guid charityId, Guid donationId) : base(Guid.NewGuid())
     {
         CharityId = charityId;
+        DonationId = donationId;
         Status = ReservationStatus.Pending;
     }
 
-    public void AddItem(DonationItem donationItem, int quantity)
+    public void AddItem(Guid donationItemId, string itemName, string unit, int quantity)
     {
         if (quantity <= 0)
         throw new DomainException("Quantity must be positive.");
+
+         if (_items.Any(i => i.DonationItemId == donationItemId))
+            throw new DomainException("Item already added.");
         
-        _items.Add(new ReservationItem(Id, donationItem.Id, quantity));
+        _items.Add(new ReservationItem(Id, donationItemId, itemName, unit, quantity));
     }
 
     public void Confirm()
@@ -41,6 +47,9 @@ public class Reservation : AuditableEntity
     {
         if (Status == ReservationStatus.Completed)
             throw new DomainException("Cannot cancel completed reservation.");
+        
+          if (Status == ReservationStatus.Cancelled)
+            throw new DomainException("Already cancelled.");
 
         Status = ReservationStatus.Cancelled;
     }

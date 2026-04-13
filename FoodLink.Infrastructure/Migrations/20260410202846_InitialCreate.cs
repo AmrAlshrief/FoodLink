@@ -37,11 +37,12 @@ namespace FoodLink.Infrastructure.Migrations
                 columns: table => new
                 {
                     Id = table.Column<Guid>(type: "TEXT", nullable: false),
-                    RestaurantId = table.Column<Guid>(type: "TEXT", nullable: false),
+                    BusinessProfileId = table.Column<Guid>(type: "TEXT", nullable: false),
                     Title = table.Column<string>(type: "TEXT", maxLength: 100, nullable: false),
-                    Description = table.Column<string>(type: "TEXT", nullable: false),
+                    Description = table.Column<string>(type: "TEXT", maxLength: 500, nullable: false),
                     ExpiryDate = table.Column<DateTime>(type: "TEXT", nullable: false),
-                    Status = table.Column<int>(type: "INTEGER", nullable: false),
+                    Status = table.Column<string>(type: "TEXT", maxLength: 20, nullable: false),
+                    ImageUrl = table.Column<string>(type: "TEXT", maxLength: 500, nullable: false),
                     CreatedAtUtc = table.Column<DateTimeOffset>(type: "TEXT", nullable: false),
                     CreatedBy = table.Column<string>(type: "TEXT", nullable: true),
                     LastModifiedUtc = table.Column<DateTimeOffset>(type: "TEXT", nullable: true),
@@ -126,7 +127,9 @@ namespace FoodLink.Infrastructure.Migrations
                     DonationId = table.Column<Guid>(type: "TEXT", nullable: false),
                     Name = table.Column<string>(type: "TEXT", maxLength: 100, nullable: false),
                     TotalQuantity = table.Column<int>(type: "INTEGER", nullable: false),
-                    ReservedQuantity = table.Column<int>(type: "INTEGER", nullable: false)
+                    ReservedQuantity = table.Column<int>(type: "INTEGER", nullable: false),
+                    Unit = table.Column<string>(type: "TEXT", nullable: false),
+                    ImageUrl = table.Column<string>(type: "TEXT", maxLength: 500, nullable: false)
                 },
                 constraints: table =>
                 {
@@ -229,6 +232,21 @@ namespace FoodLink.Infrastructure.Migrations
                 name: "IX_DonationItem_DonationId",
                 table: "DonationItem",
                 column: "DonationId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Donations_BusinessProfileId",
+                table: "Donations",
+                column: "BusinessProfileId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Donations_ExpiryDate",
+                table: "Donations",
+                column: "ExpiryDate");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Donations_Status",
+                table: "Donations",
+                column: "Status");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Notifications_UserId_IsRead",

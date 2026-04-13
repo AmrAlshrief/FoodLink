@@ -56,6 +56,35 @@ public class DonationService(
         return donation != null ? MapToResponse(donation) : null;
     }
 
+    public async Task UpdateDonationAsync(UpdateDonationRequest request)
+    {
+        var donation = await donationRepository.GetByIdAsync(request.Id);
+        if (donation == null) throw new Exception("Donation not found.");
+
+        // Update fields if provided
+        if (!string.IsNullOrEmpty(request.Title))
+            donation.Title = request.Title;
+
+        if (request.Description != null)
+            donation.Description = request.Description;
+
+        if (request.ExpiryDate.HasValue)
+            donation.ExpiryDate = request.ExpiryDate.Value.DateTime;
+
+        // Handle image update
+        if (request.Image != null)
+        {
+            var imageUrl = await imageService.UploadImageAsync(
+                request.Image,
+                request.ImageFileName ?? string.Empty);
+            donation.ImageUrl = imageUrl;
+        }
+
+        // For simplicity, we won't handle item updates here
+
+        await unitOfWork.SaveChangesAsync();
+    }
+
     private DonationResponse MapToResponse(Donation donation)
     {
         return new DonationResponse
@@ -64,11 +93,13 @@ public class DonationService(
             Title = donation.Title,
             Description = donation.Description,
             ExpiryDate = donation.ExpiryDate,
+            ImageUrl = donation.ImageUrl,
             Items = donation.Items.Select(i => new DonationItemResponse 
             { 
                 Name = i.Name, 
                 Quantity = i.AvailableQuantity, 
-                Unit = i.Unit 
+                Unit = i.Unit ,
+                ImageUrl = i.ImageUrl
             }).ToList()
         };
     }

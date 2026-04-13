@@ -82,5 +82,13 @@ public class Donation : AuditableEntity
             throw new DomainException("Donation is not available.");
     }
 
+    private void EnsureNotExpired()
+    {
+        if (ExpiryDate <= DateTime.UtcNow)
+            throw new DomainException("Donation is expired.");
+    }
+
+    
+
 
 }

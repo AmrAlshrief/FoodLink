@@ -34,9 +34,15 @@ namespace FoodLink.Infrastructure.Migrations
 
                     b.Property<string>("Description")
                         .IsRequired()
+                        .HasMaxLength(500)
                         .HasColumnType("TEXT");
 
                     b.Property<DateTime>("ExpiryDate")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("ImageUrl")
+                        .IsRequired()
+                        .HasMaxLength(500)
                         .HasColumnType("TEXT");
 
                     b.Property<string>("LastModifiedBy")
@@ -45,8 +51,10 @@ namespace FoodLink.Infrastructure.Migrations
                     b.Property<DateTimeOffset?>("LastModifiedUtc")
                         .HasColumnType("TEXT");
 
-                    b.Property<int>("Status")
-                        .HasColumnType("INTEGER");
+                    b.Property<string>("Status")
+                        .IsRequired()
+                        .HasMaxLength(20)
+                        .HasColumnType("TEXT");
 
                     b.Property<string>("Title")
                         .IsRequired()
@@ -55,7 +63,13 @@ namespace FoodLink.Infrastructure.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Donations");
+                    b.HasIndex("BusinessProfileId");
+
+                    b.HasIndex("ExpiryDate");
+
+                    b.HasIndex("Status");
+
+                    b.ToTable("Donations", (string)null);
                 });
 
             modelBuilder.Entity("FoodLink.Domain.Entities.DonationItem", b =>
@@ -65,6 +79,11 @@ namespace FoodLink.Infrastructure.Migrations
                         .HasColumnType("TEXT");
 
                     b.Property<Guid>("DonationId")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("ImageUrl")
+                        .IsRequired()
+                        .HasMaxLength(500)
                         .HasColumnType("TEXT");
 
                     b.Property<string>("Name")
