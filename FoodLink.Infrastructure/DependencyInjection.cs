@@ -60,6 +60,8 @@ public static class DependencyInjection
         // 3. Register Repositories
         services.AddScoped<IDonationRepository, DonationRepository>();
         services.AddScoped<IUserRepository, UserRepository>();
+        services.AddScoped<IBusinessProfileRepository, BusinessProfileRepository>();
+        services.AddScoped<ICharityProfileRepository, CharityProfileRepository>();  
         services.AddScoped<IUnitOfWork, UnitOfWork>();
 
         // 4. Register Authentication Services

@@ -9,7 +9,7 @@ public abstract class Profile : AuditableEntity
     public double AverageRating { get; protected set; }
     public int RatingCount { get; protected set; }
 
-    protected Profile() : base() { }
+    protected Profile() { }
 
     protected Profile(Guid id) : base(id) { }
 
@@ -17,6 +17,9 @@ public abstract class Profile : AuditableEntity
     {
         if (value < 1 || value > 5)
             throw new DomainException("Rating must be between 1 and 5");
+        
+        if (RatingCount < 0)
+            throw new DomainException("Invalid rating state");
 
         AverageRating = ((AverageRating * RatingCount) + value) / (RatingCount + 1);
         RatingCount++;

@@ -18,7 +18,7 @@ public class ReservationItem : Entity
         Guid donationItemId,
         string itemName,
         string unit,
-        int quantity) : base(Guid.NewGuid())
+        int quantity)
     {
         if (quantity <= 0)
             throw new DomainException("Quantity must be positive.");

@@ -9,14 +9,29 @@ public class UserContext(IHttpContextAccessor httpContextAccessor) : IUserContex
     {
         get
         {
-            var userIdStr = httpContextAccessor.HttpContext?.User.FindFirstValue(ClaimTypes.NameIdentifier);
-            
-            if (Guid.TryParse(userIdStr, out var userId))
-            {
-                return userId;
-            }
+            var value = httpContextAccessor.HttpContext?.User.FindFirstValue(ClaimTypes.NameIdentifier);
 
-            return null;
+            return Guid.TryParse(value, out var id) ? id : null;
+        }
+    }
+
+    public Guid? BusinessProfileId
+    {
+        get
+        {
+            var value = httpContextAccessor.HttpContext?.User.FindFirstValue("businessProfileId");
+
+            return Guid.TryParse(value, out var id) ? id : null;
+        }
+    }
+
+    public Guid? CharityProfileId
+    {
+        get
+        {
+            var value = httpContextAccessor.HttpContext?.User.FindFirstValue("charityProfileId");
+
+            return Guid.TryParse(value, out var id) ? id : null;
         }
     }
 }

@@ -19,7 +19,18 @@ public class UserRepository(AppDbContext dbContext) : IUserRepository
             .FirstOrDefaultAsync(u => u.Email == email, cancellationToken);
     }
 
-    
+    public async Task<bool> ExistsByEmailAsync(string email, CancellationToken cancellationToken = default)
+    {
+        return await dbContext.Users
+            .AnyAsync(u => u.Email == email, cancellationToken);
+    }
+
+    public async Task<List<User>> GetAllAsync(CancellationToken cancellationToken = default)
+    {
+        return await dbContext.Users
+            .ToListAsync(cancellationToken);
+    }
+
     public void Add(User user)
     {
         dbContext.Users.Add(user);

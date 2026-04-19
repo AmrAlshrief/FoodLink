@@ -16,38 +16,60 @@ public class DonationItem : Entity
 
     private DonationItem() { }
 
-    internal DonationItem(Guid donationId, string name, int totalQuantity, string imageUrl, string unit) : base(Guid.NewGuid())
+    internal DonationItem(Guid donationId,
+                          string name,
+                          int totalQuantity,
+                          string unit,
+                          string? imageUrl)
     {
+        if (donationId == Guid.Empty)
+            throw new DomainException("Donation is required.");
+
         if (string.IsNullOrWhiteSpace(name))
-    throw new DomainException("Name is required");
+            throw new DomainException("Name is required");
 
-    if (totalQuantity <= 0)
-        throw new DomainException("Quantity must be > 0");
+        if (totalQuantity <= 0)
+            throw new DomainException("Quantity must be > 0");
 
-    if (string.IsNullOrWhiteSpace(unit))
-        throw new DomainException("Unit is required");
+        if (string.IsNullOrWhiteSpace(unit))
+            throw new DomainException("Unit is required");
 
         DonationId = donationId;
         Name = name;
         TotalQuantity = totalQuantity;
         Unit = unit;
-        ImageUrl = imageUrl;
+        ImageUrl = imageUrl ?? string.Empty;
         ReservedQuantity = 0;
+    }
+
+    public void UpdateDetails(string name, int totalQuantity, string unit)
+    {
+        if (string.IsNullOrWhiteSpace(name))
+            throw new DomainException("Name is required.");
+
+        if (totalQuantity <= 0)
+            throw new DomainException("Quantity must be greater than zero.");
+
+        if (totalQuantity < ReservedQuantity)
+            throw new DomainException("Total quantity cannot be less than reserved.");
+
+        if (string.IsNullOrWhiteSpace(unit))
+            throw new DomainException("Unit is required.");
+
+        Name = name;
+        TotalQuantity = totalQuantity;
+        Unit = unit;
     }
 
     public void ReserveQuantity(int amount)
     {
-        if (amount <= 0) throw new DomainException("Reservation amount must be positive.");
-        if (amount > AvailableQuantity) throw new DomainException($"Insufficient quantity for {Name}.");
-        
-        ReservedQuantity += amount;
-    }
+        if (amount <= 0)
+            throw new DomainException("Reservation amount must be positive.");
 
-    public void SetImage(string imageUrl)
-    {
-        // if (string.IsNullOrWhiteSpace(imageUrl))
-        //     throw new DomainException("Image URL is required.");
-        ImageUrl = imageUrl;
+        if (amount > AvailableQuantity)
+            throw new DomainException($"Insufficient quantity for {Name}.");
+
+        ReservedQuantity += amount;
     }
 
     public void ReleaseQuantity(int amount)
@@ -60,4 +82,10 @@ public class DonationItem : Entity
 
         ReservedQuantity -= amount;
     }
+
+    public void SetImage(string imageUrl)
+    {
+        ImageUrl = imageUrl ?? string.Empty;
+    }
+
 }

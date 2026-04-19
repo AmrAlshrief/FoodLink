@@ -3,15 +3,23 @@ using FoodLink.Application.Common.Interfaces;
 using FoodLink.Application.Common.Interfaces.Services;
 using FoodLink.Application.Common.Interfaces.Repositories;
 using FoodLink.Application.Features.Donations.Dtos;
+using FoodLink.Domain.Common.Exceptions;
+
 namespace FoodLink.Application.Features.Donations;
 public class DonationService(
     IDonationRepository donationRepository, 
     IUnitOfWork unitOfWork,
-    IImageService imageService) : IDonationService
+    IImageService imageService,
+    IUserContext userContext) : IDonationService
 {
     public async Task<Guid> CreateDonationAsync(CreateDonationRequest request)
     {
-        // 1. Upload the image first, if provided
+        var businessId = userContext.BusinessProfileId
+            ?? throw new DomainException("User does not have a business profile.");
+
+        if (!request.ExpiryDate.HasValue)
+            throw new DomainException("Expiry date is required.");
+
         var imageUrl = string.Empty;
         if (request.Image != null)
         {
@@ -20,26 +28,48 @@ public class DonationService(
                 request.ImageFileName ?? string.Empty);
         }
 
-        // 2. Create the Aggregate Root
         var donation = new Donation(
-            request.BusinessId,
+            businessId,
             request.Title,
             request.Description ?? string.Empty,
-            request.ExpiryDate?.DateTime ?? DateTime.UtcNow.AddDays(1),
+            request.ExpiryDate.Value.DateTime,
             imageUrl);
 
-        // 3. Add children through the Domain logic
-        foreach (var item in request.Items)
-        {
-            donation.AddItem(item.Name, item.Quantity, item.Unit);
-        }
-
-        // 3. Persist via Repository and UoW
         donationRepository.Add(donation);
         await unitOfWork.SaveChangesAsync();
 
         return donation.Id;
     }
+
+    // public async Task AddItemAsync(Guid donationId, AddDonationItemRequest request)
+    // {
+    //     var businessId = userContext.BusinessProfileId
+    //         ?? throw new DomainException("User does not have a business profile.");
+
+    //     // Upload image BEFORE fetching entity to minimize time in DbContext
+    //     var itemImageUrl = string.Empty;
+    //     if (request.Image != null)
+    //     {
+    //         itemImageUrl = await imageService.UploadImageAsync(
+    //             request.Image,
+    //             request.ImageFileName ?? string.Empty);
+    //     }
+
+    //     // Fetch entity after I/O to keep DbContext fresh
+    //     var donation = await donationRepository.GetByIdAsync(donationId)
+    //         ?? throw new DomainException("Donation not found.");
+
+    //     if (donation.BusinessProfileId != businessId)
+    //         throw new DomainException("You are not allowed to modify this donation.");
+
+    //     donation.AddItem(
+    //         request.Name,
+    //         request.Quantity,
+    //         request.Unit,
+    //         itemImageUrl);
+
+    //     await unitOfWork.SaveChangesAsync();
+    // }
 
     public async Task<List<DonationResponse>> GetAllActiveDonationsAsync()
     {
@@ -51,36 +81,111 @@ public class DonationService(
 
     public async Task<DonationResponse?> GetDonationByIdAsync(Guid id)
     {
-        var donations = await donationRepository.GetActiveDonationsAsync();
-        var donation = donations.FirstOrDefault(d => d.Id == id);
-        return donation != null ? MapToResponse(donation) : null;
+        var donation = await donationRepository.GetByIdAsync(id);
+        return donation is null ? null : MapToResponse(donation);
     }
 
     public async Task UpdateDonationAsync(UpdateDonationRequest request)
     {
-        var donation = await donationRepository.GetByIdAsync(request.Id);
-        if (donation == null) throw new Exception("Donation not found.");
+        var businessId = userContext.BusinessProfileId
+            ?? throw new DomainException("User does not have a business profile.");
 
-        // Update fields if provided
-        if (!string.IsNullOrEmpty(request.Title))
-            donation.Title = request.Title;
+        // Upload image BEFORE fetching entity to minimize time in DbContext
+        var imageUrl = string.Empty;
+        if (request.Image != null)
+        {
+            imageUrl = await imageService.UploadImageAsync(
+                request.Image,
+                request.ImageFileName ?? string.Empty);
+        }
 
-        if (request.Description != null)
-            donation.Description = request.Description;
+        // Fetch entity after I/O to keep DbContext fresh
+        var donation = await donationRepository.GetByIdAsync(request.Id)
+            ?? throw new DomainException("Donation not found.");
 
-        if (request.ExpiryDate.HasValue)
-            donation.ExpiryDate = request.ExpiryDate.Value.DateTime;
+        if (donation.BusinessProfileId != businessId)
+            throw new DomainException("You are not allowed to update this donation.");
 
-        // Handle image update
+        donation.UpdateDetails(
+            request.Title,
+            request.Description,
+            request.ExpiryDate?.DateTime);
+
+        if (!string.IsNullOrEmpty(imageUrl))
+        {
+            donation.SetImage(imageUrl);
+        }
+
+        await unitOfWork.SaveChangesAsync();
+     
+    }
+
+    public async Task AddItemAsync(Guid donationId, AddDonationItemRequest request)
+    {
+        var donation = await donationRepository.GetByIdAsync(donationId);
+
+        if (donation is null)
+            throw new DomainException("Donation not found.");
+
+        var itemImageUrl = string.Empty;
+
+        if (request.Image != null)
+        {
+            itemImageUrl = await imageService.UploadImageAsync(
+                request.Image,
+                request.ImageFileName ?? string.Empty);
+        }
+
+        donation.AddItem(
+            request.Name,
+            request.Quantity,
+            request.Unit,
+            itemImageUrl);
+
+        await unitOfWork.SaveChangesAsync();
+    }
+
+    public async Task UpdateItemAsync(Guid donationId, Guid itemId, UpdateDonationItemRequest request)
+    {
+        var businessId = userContext.BusinessProfileId
+            ?? throw new DomainException("User does not have a business profile.");
+
+        var donation = await donationRepository.GetByIdAsync(donationId)
+            ?? throw new DomainException("Donation not found.");
+
+        if (donation.BusinessProfileId != businessId)
+            throw new DomainException("You are not allowed to modify this donation.");
+
+        donation.UpdateItem(
+            itemId,
+            request.Name,
+            request.Quantity,
+            request.Unit);
+
         if (request.Image != null)
         {
             var imageUrl = await imageService.UploadImageAsync(
                 request.Image,
                 request.ImageFileName ?? string.Empty);
-            donation.ImageUrl = imageUrl;
+
+            donation.SetItemImage(itemId, imageUrl);
         }
 
-        // For simplicity, we won't handle item updates here
+        await unitOfWork.SaveChangesAsync();
+    }
+
+    public async Task RemoveItemAsync(Guid donationId, Guid itemId)
+    {
+        var businessId = userContext.BusinessProfileId
+            ?? throw new DomainException("User does not have a business profile.");
+
+        var donation = await donationRepository.GetByIdAsync(donationId)
+            ?? throw new DomainException("Donation not found.");
+
+        if (donation.BusinessProfileId != businessId)
+            throw new DomainException("You are not allowed to modify this donation.");
+
+        donation.RemoveItem(itemId);
 
         await unitOfWork.SaveChangesAsync();
     }

@@ -4,7 +4,7 @@ public class UpdateDonationRequest
 {
     public Guid Id { get; set; }
 
-    public string Title { get; set; } = string.Empty;
+    public string? Title { get; set; } = string.Empty;
 
     public string? Description { get; set; }
 
@@ -14,5 +14,14 @@ public class UpdateDonationRequest
 
     public string? ImageFileName { get; set; }
 
-    public List<DonationItemDto> Items { get; set; } = new();
+}
+
+public class UpdateDonationItemRequest
+{
+    public string Name { get; set; } = string.Empty;
+    public int Quantity { get; set; }
+    public string Unit { get; set; } = string.Empty;
+
+    public Stream? Image { get; set; }
+    public string? ImageFileName { get; set; }
 }
