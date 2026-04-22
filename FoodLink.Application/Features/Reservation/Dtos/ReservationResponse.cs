@@ -8,6 +8,7 @@ public class ReservationResponse
 
     public string Status { get; set; } = string.Empty;
 
+    public DateTime ExpiresAt { get; set; }
     public DateTime? PickedUpAt { get; set; }
 
     public List<ReservationItemResponse> Items { get; set; } = new();

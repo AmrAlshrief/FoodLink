@@ -11,16 +11,18 @@ public class Reservation : AuditableEntity
     
     public ReservationStatus Status { get; private set; }
     public DateTime? PickedUpAt { get; private set; }
+    public DateTime ExpiresAt { get; private set; }
 
     private readonly List<ReservationItem> _items = new();
     public IReadOnlyCollection<ReservationItem> Items => _items.AsReadOnly();
 
     private Reservation() { }
 
-    public Reservation(Guid charityId, Guid donationId) : base(Guid.NewGuid())
+    public Reservation(Guid charityId, Guid donationId, DateTime expiresAt) : base(Guid.NewGuid())
     {
         CharityId = charityId;
         DonationId = donationId;
+        ExpiresAt = expiresAt;
         Status = ReservationStatus.Pending;
     }
 
@@ -35,31 +37,47 @@ public class Reservation : AuditableEntity
         _items.Add(new ReservationItem(Id, donationItemId, itemName, unit, quantity));
     }
 
-    public void Confirm()
-    {
-        if (Status != ReservationStatus.Pending)
-            throw new DomainException("Only pending reservations can be confirmed.");
-
-        Status = ReservationStatus.Confirmed;
-    }
-
     public void Cancel()
     {
-        if (Status == ReservationStatus.Completed)
-            throw new DomainException("Cannot cancel completed reservation.");
-        
-          if (Status == ReservationStatus.Cancelled)
-            throw new DomainException("Already cancelled.");
+        if (Status == ReservationStatus.PickedUp)
+        throw new DomainException("Cannot cancel picked up reservation.");
+
+        if (Status == ReservationStatus.Cancelled)
+            throw new DomainException("Reservation already cancelled.");
+
+        if (Status == ReservationStatus.NoShow)
+            throw new DomainException("Cannot cancel no-show reservation.");
+
 
         Status = ReservationStatus.Cancelled;
     }
 
     public void CompletePickup()
     {
-        if (Status != ReservationStatus.Confirmed)
-            throw new DomainException("Must confirm before completing.");
+        if (DateTime.UtcNow > ExpiresAt)
+            throw new DomainException("Cannot pick up expired reservation.");
+            
+        if (Status != ReservationStatus.Pending)
+            throw new DomainException("Only active reservations can be picked up.");
 
-        Status = ReservationStatus.Completed;
+        Status = ReservationStatus.PickedUp;
         PickedUpAt = DateTime.UtcNow;
+    }
+
+    public void MarkNoShow()
+    {
+        if (DateTime.UtcNow <= ExpiresAt)
+            throw new DomainException("Cannot mark reservation as no-show before it expires.");
+
+        if (Status != ReservationStatus.Pending)
+            throw new DomainException("Only active reservations can be marked as no-show.");
+
+        Status = ReservationStatus.NoShow;
+    }
+
+    public void EnsureHasItems()
+    {
+        if (!_items.Any())
+            throw new DomainException("Reservation must contain at least one item.");
     }
 }

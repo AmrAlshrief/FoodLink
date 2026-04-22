@@ -7,8 +7,8 @@ public class ReservationItem : Entity
 {
     public Guid ReservationId { get; private set; }
     public Guid DonationItemId { get; private set; }
-    public string ItemName { get; private set; }
-    public string Unit { get; private set; }
+    public string ItemName { get; private set; } =  string.Empty;
+    public string Unit { get; private set; } = string.Empty;
     public int Quantity { get; private set; }
 
     private ReservationItem() { }
@@ -18,7 +18,7 @@ public class ReservationItem : Entity
         Guid donationItemId,
         string itemName,
         string unit,
-        int quantity)
+        int quantity) : base(Guid.NewGuid())    
     {
         if (quantity <= 0)
             throw new DomainException("Quantity must be positive.");

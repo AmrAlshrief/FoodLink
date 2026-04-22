@@ -22,6 +22,11 @@ public class DonationRepository(AppDbContext context) : IDonationRepository
         context.Donations.Update(donation);
     }
 
+    public void Remove(Donation donation)
+    {
+        context.Donations.Remove(donation);
+    }
+
     public async Task<Donation?> GetByIdAsync(Guid id, CancellationToken cancellationToken = default)
     {
         return await context.Donations

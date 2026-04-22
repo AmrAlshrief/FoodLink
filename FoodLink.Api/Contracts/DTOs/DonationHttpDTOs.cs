@@ -23,3 +23,10 @@ public record AddDonationItemHttpRequest(
     string Unit,
     IFormFile? Image
 );
+
+public record UpdateDonationItemHttpRequest(
+    string Name,
+    int Quantity,
+    string Unit,
+    IFormFile? Image
+);

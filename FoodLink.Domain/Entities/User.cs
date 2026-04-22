@@ -43,6 +43,22 @@ public class User : AuditableEntity
         return new User(name, email, passwordHash, role, phone);
     }
 
+    public void UpdateName(string name)
+    {
+        if (string.IsNullOrWhiteSpace(name))
+            throw new DomainException("Name cannot be empty");
+
+        Name = name;
+    }
+
+    public void UpdatePhone(string phone)
+    {
+        if (string.IsNullOrWhiteSpace(phone))
+            throw new DomainException("Phone cannot be empty");
+
+        Phone = phone;
+    }
+
     public bool IsAdmin() => Role == UserRole.Admin;
 
     public void SetProfileImage(string imageUrl)
@@ -50,43 +66,4 @@ public class User : AuditableEntity
         ProfileImage = imageUrl;
     }
 
-    // private User(string name, string email, string passwordHash, UserRole role, string phone, string? profileImage) 
-    //         : base(Guid.NewGuid())
-    // {
-    //     Name = name;
-    //     Email = email;
-    //     PasswordHash = passwordHash;
-    //     Role = role;
-    //     Phone = phone;
-    //     ProfileImage = profileImage;
-    // }
-
-    // public static User Create(string name, string email, string passwordHash, UserRole role, string phone, string? profileImage)
-    // {
-    //     return new User(name, email, passwordHash, role, phone, profileImage);
-    // }
-
-    // public bool IsAdmin() => Role == UserRole.Admin;
-
-    // public BusinessProfile CreateBusinessProfile(
-    //     string businessName,
-    //     string address,
-    //     string businessType)
-    // {
-    //     if (IsAdmin())
-    //         throw new DomainException("Admin cannot have profile");
-
-    //     return BusinessProfile.Create(Id, businessName, address, businessType);
-    // }
-
-    // public CharityProfile CreateCharityProfile(Guid UserId,
-    //     string organizationName,
-    //     string licenseNumber,
-    //     string address)
-    // {
-    //     if (IsAdmin())
-    //         throw new DomainException("Admin cannot have profile");
-
-    //     return CharityProfile.Create(UserId, organizationName, licenseNumber, address);
-    // }
 }

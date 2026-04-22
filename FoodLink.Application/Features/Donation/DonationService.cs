@@ -41,36 +41,6 @@ public class DonationService(
         return donation.Id;
     }
 
-    // public async Task AddItemAsync(Guid donationId, AddDonationItemRequest request)
-    // {
-    //     var businessId = userContext.BusinessProfileId
-    //         ?? throw new DomainException("User does not have a business profile.");
-
-    //     // Upload image BEFORE fetching entity to minimize time in DbContext
-    //     var itemImageUrl = string.Empty;
-    //     if (request.Image != null)
-    //     {
-    //         itemImageUrl = await imageService.UploadImageAsync(
-    //             request.Image,
-    //             request.ImageFileName ?? string.Empty);
-    //     }
-
-    //     // Fetch entity after I/O to keep DbContext fresh
-    //     var donation = await donationRepository.GetByIdAsync(donationId)
-    //         ?? throw new DomainException("Donation not found.");
-
-    //     if (donation.BusinessProfileId != businessId)
-    //         throw new DomainException("You are not allowed to modify this donation.");
-
-    //     donation.AddItem(
-    //         request.Name,
-    //         request.Quantity,
-    //         request.Unit,
-    //         itemImageUrl);
-
-    //     await unitOfWork.SaveChangesAsync();
-    // }
-
     public async Task<List<DonationResponse>> GetAllActiveDonationsAsync()
     {
         var donations = await donationRepository.GetActiveDonationsAsync();
@@ -190,6 +160,22 @@ public class DonationService(
         await unitOfWork.SaveChangesAsync();
     }
 
+    public async Task RemoveDonationAsync(Guid id)
+    {
+        var businessId = userContext.BusinessProfileId
+            ?? throw new DomainException("User does not have a business profile.");
+
+        var donation = await donationRepository.GetByIdAsync(id)
+            ?? throw new DomainException("Donation not found.");
+
+        if (donation.BusinessProfileId != businessId)
+            throw new DomainException("You are not allowed to modify this donation.");
+
+        donationRepository.Remove(donation);
+
+        await unitOfWork.SaveChangesAsync();
+    }
+
     private DonationResponse MapToResponse(Donation donation)
     {
         return new DonationResponse
@@ -201,6 +187,7 @@ public class DonationService(
             ImageUrl = donation.ImageUrl,
             Items = donation.Items.Select(i => new DonationItemResponse 
             { 
+                Id = i.Id,  
                 Name = i.Name, 
                 Quantity = i.AvailableQuantity, 
                 Unit = i.Unit ,

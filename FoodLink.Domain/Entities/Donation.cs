@@ -167,7 +167,12 @@ public class Donation : AuditableEntity
     // Helpers
     // ----------------------------
 
-    private DonationItem GetItem(Guid itemId)
+    public bool IsExpired()
+    {
+        return ExpiryDate <= DateTime.UtcNow;
+    }
+
+    public DonationItem GetItem(Guid itemId)
     {
         return _items.FirstOrDefault(i => i.Id == itemId)
             ?? throw new DomainException("Item not found.");

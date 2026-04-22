@@ -8,5 +8,6 @@ public interface IDonationRepository
     Task<List<Donation>> GetActiveDonationsAsync(CancellationToken cancellationToken = default);
     public void Add(Donation donation);
     public void Update(Donation donation);
+    public void Remove(Donation donation);
 }
 

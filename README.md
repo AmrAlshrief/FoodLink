@@ -59,12 +59,23 @@ dotnet ef database update
 
 ### Authentication
 - `POST /api/auth/login` - User login
-- `POST /api/auth/register` - User registration
+- `POST /api/auth/register-charity` - Charity registration
+- `POST /api/auth/register-business` - Business registration
+
+### Account
+- `GET /api/account/profile` - Get user profile
+- `PUT /api/account/profile` - Update user profile
+- `POST /api/account/profile-image` - Update user profile image
 
 ### Donations
 - `GET /api/donations` - Get active donations
 - `POST /api/donations` - Create new donation
 - `GET /api/donations/{id}` - Get donation details
+- `PUT /api/donations/{id}` - Update donation details
+- `DELETE /api/donations/{id}` - Remove a donation
+- `POST /api/donations/{donationId}/items` - Add item to a donation
+- `PUT /api/donations/{donationId}/items/{itemId}` - Update a donation item
+- `DELETE /api/donations/{donationId}/items/{itemId}` - Remove a donation item
 
 ## Contributing
 

@@ -8,6 +8,7 @@ public class CharityProfile : Profile
     public string Name { get; private set; }
     public string LicenseNumber { get; private set; }
     public string Address { get; private set; }
+    public int NoShowCount { get; private set; }
 
     private CharityProfile() { }
 
@@ -46,4 +47,11 @@ public class CharityProfile : Profile
         Name = name;
         Address = address;
     }
+
+    public void MarkNoShow()
+    {
+        NoShowCount++;
+    }
+
+    
 }

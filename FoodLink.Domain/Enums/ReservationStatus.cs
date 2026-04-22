@@ -3,7 +3,8 @@ namespace FoodLink.Domain.Enums;
 public enum ReservationStatus
 {
     Pending,
-    Confirmed,
+    PickedUp,
     Cancelled,
-    Completed
+    Expired,
+    NoShow
 }

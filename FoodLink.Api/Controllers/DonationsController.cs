@@ -64,7 +64,7 @@ public class DonationsController(IDonationService donationService) : ControllerB
     }
 
     [HttpPut("{id}")]
-    //[Authorize(Roles = "Business")]
+    [Authorize(Roles = "Business")]
     public async Task<IActionResult> UpdateDonation(Guid id, [FromForm] UpdateDonationHttpRequest httpRequest)
     {
         if (id != httpRequest.Id)
@@ -72,7 +72,7 @@ public class DonationsController(IDonationService donationService) : ControllerB
 
         var request = new UpdateDonationRequest
         {
-            Id = httpRequest.Id,
+            Id = id,
             Title = httpRequest.Title,
             Description = httpRequest.Description,
             ExpiryDate = httpRequest.ExpiryDate,
@@ -81,6 +81,39 @@ public class DonationsController(IDonationService donationService) : ControllerB
         };
 
         await donationService.UpdateDonationAsync(request);
+        return NoContent();
+    }
+
+    [HttpPut("{donationId}/items/{itemId}")]
+    [Authorize(Roles = "Business")]
+    public async Task<IActionResult> UpdateItem(Guid donationId, Guid itemId, [FromForm] UpdateDonationItemHttpRequest httpRequest)
+    {
+        var request = new UpdateDonationItemRequest
+        {
+            Name = httpRequest.Name,
+            Quantity = httpRequest.Quantity,
+            Unit = httpRequest.Unit,
+            Image = httpRequest.Image?.OpenReadStream(),
+            ImageFileName = httpRequest.Image?.FileName
+        };
+
+        await donationService.UpdateItemAsync(donationId, itemId, request);
+        return NoContent();
+    }
+
+    [HttpDelete("{donationId}/items/{itemId}")]
+    [Authorize(Roles = "Business")]
+    public async Task<IActionResult> RemoveItem(Guid donationId, Guid itemId)
+    {
+        await donationService.RemoveItemAsync(donationId, itemId);
+        return NoContent();
+    }
+
+    [HttpDelete("{donationId}")]
+    [Authorize(Roles = "Business")]
+    public async Task<IActionResult> RemoveDonation(Guid donationId)
+    {
+        await donationService.RemoveDonationAsync(donationId);
         return NoContent();
     }
 }

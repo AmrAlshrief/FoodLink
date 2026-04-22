@@ -8,6 +8,7 @@ public interface IDonationService
     Task UpdateDonationAsync(UpdateDonationRequest request);
     Task UpdateItemAsync(Guid donationId, Guid itemId, UpdateDonationItemRequest request);
     Task RemoveItemAsync(Guid donationId, Guid itemId);
+    Task RemoveDonationAsync(Guid id);
     Task<List<DonationResponse>> GetAllActiveDonationsAsync();
     Task<DonationResponse?> GetDonationByIdAsync(Guid id);
 }

@@ -1,5 +1,6 @@
 using FoodLink.Application.Features.Authentication.Services;
 using FoodLink.Application.Features.Donations;
+using FoodLink.Application.Features.Account.Services;
 using FoodLink.Application.Common.Interfaces.Services;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -11,7 +12,7 @@ public static class DependencyInjection
     {
         services.AddScoped<IAuthenticationService, AuthService>();
         services.AddScoped<IDonationService, DonationService>();
-        
+        services.AddScoped<IAccountService, AccountService>();
 
 
         return services;
