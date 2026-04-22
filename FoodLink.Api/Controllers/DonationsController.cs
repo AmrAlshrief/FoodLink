@@ -47,7 +47,7 @@ public class DonationsController(IDonationService donationService) : ControllerB
     }
 
     [HttpGet]
-    [Authorize(Roles = "Business")]
+    [Authorize(Roles = "Charity")]
     public async Task<IActionResult> GetActiveDonations()
     {
         var donations = await donationService.GetAllActiveDonationsAsync();
@@ -55,6 +55,7 @@ public class DonationsController(IDonationService donationService) : ControllerB
     }
 
     [HttpGet("{id}")]
+    [Authorize(Roles = "Business")]
     public async Task<IActionResult> GetDonation(Guid id)
     {
         var donation = await donationService.GetDonationByIdAsync(id);
