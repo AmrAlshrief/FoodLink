@@ -16,20 +16,24 @@ public class ReservationRepository(AppDbContext dbContext) : IReservationReposit
 
     public async Task<List<Reservation>> GetByCharityIdAsync(Guid charityId, CancellationToken cancellationToken = default)
     {
-        return await dbContext.Reservations
+        var reservations = await dbContext.Reservations
             .Include(r => r.Items)
             .Where(r => r.CharityId == charityId)
-            .OrderByDescending(r => r.CreatedAtUtc)
+            //.OrderByDescending(r => r.CreatedAtUtc)
             .ToListAsync(cancellationToken);
+
+        return reservations.OrderByDescending(r => r.CreatedAtUtc).ToList();
     }
 
     public async Task<List<Reservation>> GetByDonationIdAsync(Guid donationId, CancellationToken cancellationToken = default)
     {
-        return await dbContext.Reservations
+        var reservations = await dbContext.Reservations
             .Include(r => r.Items)
             .Where(r => r.DonationId == donationId)
-            .OrderByDescending(r => r.CreatedAtUtc)
+            //.OrderByDescending(r => r.CreatedAtUtc)
             .ToListAsync(cancellationToken);
+
+        return reservations.OrderByDescending(r => r.CreatedAtUtc).ToList();
     }
 
     public async Task<List<Reservation>> GetExpiredPendingAsync(DateTime utcNow, CancellationToken cancellationToken = default)

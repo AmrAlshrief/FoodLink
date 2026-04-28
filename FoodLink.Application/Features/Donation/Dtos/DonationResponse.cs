@@ -9,6 +9,7 @@ public class DonationResponse
 
     public DateTimeOffset? ExpiryDate { get; set; }
     public string? ImageUrl { get; set; }
+    public string Status { get; set; } = string.Empty;
     public List<DonationItemResponse> Items { get; set; } = new();
 }
 

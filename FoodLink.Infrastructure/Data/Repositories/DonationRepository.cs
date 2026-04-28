@@ -5,31 +5,31 @@ using Microsoft.EntityFrameworkCore;
 
 namespace FoodLink.Infrastructure.Data.Repositories;
 
-public class DonationRepository(AppDbContext context) : IDonationRepository
+public class DonationRepository(AppDbContext dbContext) : IDonationRepository
 {
     public async Task AddAsync(Donation donation)
     {
-        await context.Donations.AddAsync(donation);
+        await dbContext.Donations.AddAsync(donation);
     }
 
     public void Add(Donation donation)
     {
-        context.Donations.Add(donation);
+        dbContext.Donations.Add(donation);
     }
 
     public void Update(Donation donation)
     {
-        context.Donations.Update(donation);
+        dbContext.Donations.Update(donation);
     }
 
     public void Remove(Donation donation)
     {
-        context.Donations.Remove(donation);
+        dbContext.Donations.Remove(donation);
     }
 
     public async Task<Donation?> GetByIdAsync(Guid id, CancellationToken cancellationToken = default)
     {
-        return await context.Donations
+        return await dbContext.Donations
             .Include(d => d.Items)
             .FirstOrDefaultAsync(d => d.Id == id, cancellationToken);
     }
@@ -37,9 +37,22 @@ public class DonationRepository(AppDbContext context) : IDonationRepository
     public async Task<List<Donation>> GetActiveDonationsAsync(CancellationToken cancellationToken = default)
     {
         var now = DateTime.UtcNow;
-        return await context.Donations
+        return await dbContext.Donations
             .Include(d => d.Items)
             .Where(d => d.ExpiryDate > now)
             .ToListAsync(cancellationToken);
+    }
+
+    public async Task<List<Donation>> GetByBusinessIdAsync(
+    Guid businessId,
+    CancellationToken cancellationToken = default)
+    {
+        var donations = await dbContext.Donations
+            .Include(d => d.Items)
+            .Where(d => d.BusinessProfileId == businessId)
+            //.OrderByDescending(d => d.CreatedAtUtc)
+            .ToListAsync(cancellationToken);
+            
+        return donations.OrderByDescending(d => d.CreatedAtUtc).ToList();
     }
 }

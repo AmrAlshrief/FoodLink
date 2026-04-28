@@ -4,6 +4,7 @@ using FoodLink.Application.Common.Interfaces.Services;
 using FoodLink.Application.Common.Interfaces.Repositories;
 using FoodLink.Application.Features.Donations.Dtos;
 using FoodLink.Domain.Common.Exceptions;
+using FoodLink.Domain.Enums;
 
 namespace FoodLink.Application.Features.Donations;
 public class DonationService(
@@ -69,7 +70,6 @@ public class DonationService(
                 request.ImageFileName ?? string.Empty);
         }
 
-        // Fetch entity after I/O to keep DbContext fresh
         var donation = await donationRepository.GetByIdAsync(request.Id)
             ?? throw new DomainException("Donation not found.");
 
@@ -176,6 +176,40 @@ public class DonationService(
         await unitOfWork.SaveChangesAsync();
     }
 
+    public async Task<List<DonationResponse>> GetDonationsByBusinessIdAsync(Guid businessId, DonationFilterRequest filter, CancellationToken cancellationToken = default)
+    {
+        if (userContext.BusinessProfileId != businessId || businessId == Guid.Empty)
+            throw new DomainException("You are not allowed to view these donations.");
+            
+        var donations = await donationRepository.GetByBusinessIdAsync(businessId);
+
+        if (!string.IsNullOrWhiteSpace(filter.Status) &&
+            Enum.TryParse<DonationStatus>(filter.Status, true, out var status))
+        {
+            donations = donations
+                .Where(d => d.Status == status)
+                .ToList();
+        }
+
+        return donations.Select(MapToResponse).ToList();
+    }
+
+    public async Task CancelDonationAsync(Guid donationId, CancellationToken cancellationToken = default)
+    {
+        var businessId = userContext.BusinessProfileId
+            ?? throw new DomainException("User does not have a business profile.");
+
+        var donation = await donationRepository.GetByIdAsync(donationId, cancellationToken)
+            ?? throw new DomainException("Donation not found.");
+
+        if (donation.BusinessProfileId != businessId)
+            throw new DomainException("You are not allowed to cancel this donation.");
+
+        donation.Cancel();
+
+        await unitOfWork.SaveChangesAsync(cancellationToken);
+    }
+
     private DonationResponse MapToResponse(Donation donation)
     {
         return new DonationResponse
@@ -185,6 +219,7 @@ public class DonationService(
             Description = donation.Description,
             ExpiryDate = donation.ExpiryDate,
             ImageUrl = donation.ImageUrl,
+            Status = donation.Status.ToString(),
             Items = donation.Items.Select(i => new DonationItemResponse 
             { 
                 Id = i.Id,  

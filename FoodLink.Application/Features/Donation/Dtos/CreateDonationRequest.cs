@@ -8,3 +8,8 @@ public class CreateDonationRequest
     public string? ImageFileName { get; set; }
 }
 
+public class DonationFilterRequest
+{
+    public string? Status { get; set; }
+}
+

@@ -137,8 +137,8 @@ public class ReservationService(
         return new ReservationResponse
         {
             Id = reservation.Id,
-            DonationId = reservation.DonationId,
-            CharityId = reservation.CharityId,
+            //DonationId = reservation.DonationId,
+            //CharityId = reservation.CharityId,
             Status = reservation.Status.ToString(),
             ExpiresAt = reservation.ExpiresAt,
             PickedUpAt = reservation.PickedUpAt,

@@ -6,6 +6,11 @@ namespace FoodLink.Infrastructure.Data.Repositories;
 
 public class CharityProfileRepository(AppDbContext dbContext) : ICharityProfileRepository
 {
+    public async Task<List<CharityProfile>> GetAllAsync(CancellationToken cancellationToken = default)
+    {
+        return await dbContext.CharityProfiles.ToListAsync(cancellationToken);
+    }
+
     public async Task<CharityProfile?> GetByIdAsync(Guid id, CancellationToken cancellationToken = default)
     {
         return await dbContext.CharityProfiles

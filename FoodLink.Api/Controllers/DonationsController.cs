@@ -2,13 +2,14 @@ using FoodLink.Application.Common.Interfaces.Services;
 using FoodLink.Application.Features.Donations.Dtos;
 using FoodLink.Api.Contracts.DTOs;
 using Microsoft.AspNetCore.Authorization;
+using FoodLink.Application.Common.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 
 namespace FoodLink.Api.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
-public class DonationsController(IDonationService donationService) : ControllerBase
+public class DonationsController(IDonationService donationService, IUserContext userContext) : ControllerBase
 {
     [HttpPost]
     [Authorize(Roles = "Business")]
@@ -51,6 +52,15 @@ public class DonationsController(IDonationService donationService) : ControllerB
     public async Task<IActionResult> GetActiveDonations()
     {
         var donations = await donationService.GetAllActiveDonationsAsync();
+        return Ok(donations);
+    }
+
+    [HttpGet("my")]
+    [Authorize(Roles = "Business")]
+    public async Task<IActionResult> GetMyDonations([FromQuery] DonationFilterRequest filter)
+    {
+        var businessId = userContext.BusinessProfileId.Value;
+        var donations = await donationService.GetDonationsByBusinessIdAsync(businessId, filter);
         return Ok(donations);
     }
 
@@ -115,6 +125,14 @@ public class DonationsController(IDonationService donationService) : ControllerB
     public async Task<IActionResult> RemoveDonation(Guid donationId)
     {
         await donationService.RemoveDonationAsync(donationId);
+        return NoContent();
+    }
+
+    [HttpPost("{id}/cancel")]
+    [Authorize(Roles = "Business")]
+    public async Task<IActionResult> CancelDonation(Guid id, CancellationToken cancellationToken)
+    {
+        await donationService.CancelDonationAsync(id, cancellationToken);
         return NoContent();
     }
 }

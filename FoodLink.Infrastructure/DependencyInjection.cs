@@ -2,7 +2,9 @@ using FoodLink.Infrastructure.Data;
 using FoodLink.Infrastructure.Data.Interceptors;
 using FoodLink.Application.Common.Interfaces.Repositories;
 using FoodLink.Application.Common.Interfaces.Services;
+using FoodLink.Application.Common.Interfaces.Services.Queries;
 using FoodLink.Application.Common.Interfaces;
+using FoodLink.Infrastructure.Data.Queries;
 using FoodLink.Infrastructure.Data.Repositories;
 using FoodLink.Infrastructure.Services.Authentication;
 using FoodLink.Infrastructure.Services.ImageUpload;
@@ -62,7 +64,10 @@ public static class DependencyInjection
         services.AddScoped<IUserRepository, UserRepository>();
         services.AddScoped<IBusinessProfileRepository, BusinessProfileRepository>();
         services.AddScoped<ICharityProfileRepository, CharityProfileRepository>();  
+        services.AddScoped<IReservationRepository, ReservationRepository>();
         services.AddScoped<IUnitOfWork, UnitOfWork>();
+
+        services.AddScoped<IReservationQueries, ReservationQueries>();
 
         // 4. Register Authentication Services
         services.AddSingleton<IPasswordHasher, PasswordHasher>();

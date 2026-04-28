@@ -14,3 +14,9 @@ public class CreateReservationItemRequest
     public string Unit { get; set; } = string.Empty;
     public int Quantity { get; set; }
 }
+
+public class ReservationFilterRequest
+{
+    public string? Status { get; set; }
+    public bool? IsExpired { get; set; }
+}

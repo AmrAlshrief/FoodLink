@@ -3,6 +3,7 @@ using FoodLink.Infrastructure;
 using FoodLink.Application;
 using FoodLink.Api.Services;
 using FoodLink.Application.Common.Interfaces;
+using FoodLink.Application.Common;
 using Microsoft.OpenApi;
 var builder = WebApplication.CreateBuilder(args);
 
@@ -53,5 +54,10 @@ if (app.Environment.IsDevelopment())
 app.UseAuthentication();
 app.UseAuthorization();
 app.MapControllers();
+
+using (var scope = app.Services.CreateScope())
+{
+    await DbSeeder.SeedAdminAsync(scope.ServiceProvider);
+}
 
 app.Run();
