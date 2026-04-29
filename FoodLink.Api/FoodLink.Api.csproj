@@ -16,6 +16,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\FoodLink.Domain\FoodLink.Domain.csproj" />
     <ProjectReference Include="..\FoodLink.Application\FoodLink.Application.csproj" />
     <ProjectReference Include="..\FoodLink.Infrastructure\FoodLink.Infrastructure.csproj" />
   </ItemGroup>
