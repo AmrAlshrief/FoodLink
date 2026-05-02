@@ -34,6 +34,10 @@ public record AuthenticationResponse(
     string Name,
     string Email,
     string Role,
+    string? ProfileImage,
+    //string? Phone,
+    string? OrganizationName,
+    //string? Address,
     string Token
 );
 

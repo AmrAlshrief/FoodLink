@@ -24,6 +24,12 @@ public static class DependencyInjection
     {
         // 1. Database & Interceptors
         var connectionString = configuration.GetConnectionString("DefaultConnection");
+
+        if (string.IsNullOrWhiteSpace(connectionString))
+        {
+            throw new InvalidOperationException(
+                "Connection string 'DefaultConnection' was not found.");
+        }
         
         services.AddScoped<AuditableEntityInterceptor>();
 

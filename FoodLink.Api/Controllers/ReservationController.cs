@@ -48,8 +48,20 @@ public class ReservationController(IReservationService reservationService,
     }
 
     [HttpGet]
-    [Authorize(Roles = "Admin")]
-    public async Task<IActionResult> GetReservations(
+    [Authorize(Roles = "Business,Admin")]
+    public async Task<IActionResult> ReservationsByDonationId(
+        [FromQuery] ReservationFilterRequest filter
+    )
+    {
+        var charityId = userContext.CharityProfileId
+            ?? throw new Exception("User does not have a charity profile.");
+        var result = await reservationQueries.GetReservationsAsync(charityId, filter);
+        return Ok(result);
+    }
+
+    [HttpGet]
+    [Authorize(Roles = "Admin,Business")]
+    public async Task<IActionResult> Reservations(
         [FromQuery] Guid charityId,
         [FromQuery] ReservationFilterRequest filter)
     {
@@ -58,4 +70,25 @@ public class ReservationController(IReservationService reservationService,
         var result = await reservationQueries.GetReservationsAsync(charityId, filter);
         return Ok(result);
     }
+
+    [HttpGet("donations/{donationId}/reservations")]
+    [Authorize(Roles = "Business,Admin")]
+    public async Task<IActionResult> GetReservationsForDonation(
+        Guid donationId,
+        [FromQuery] ReservationFilterRequest filter,
+        CancellationToken cancellationToken)
+    {
+        var businessId = userContext.BusinessProfileId
+            ?? throw new Exception("User does not have a business profile.");
+
+        var result = await reservationQueries.GetReservationsByDonationAsync(
+            businessId,
+            donationId,
+            filter,
+            cancellationToken);
+
+        return Ok(result);
+    }
+
+
 }

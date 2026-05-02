@@ -76,6 +76,8 @@ public class AuthService(
             user.Name,
             user.Email,
             user.Role.ToString(),
+            user.ProfileImage,
+            request.BusinessName,
             token);
     }
 
@@ -128,6 +130,8 @@ public class AuthService(
             user.Name,
             user.Email,
             user.Role.ToString(),
+            user.ProfileImage,
+            request.OrganizationName,
             token);
     }
 
@@ -148,16 +152,20 @@ public class AuthService(
         // Get the appropriate profile ID based on user role
         Guid? businessProfileId = null;
         Guid? charityProfileId = null;
+        string? organizationName = null;
+        
 
         if (user.Role == UserRole.Business)
         {
             var businessProfile = await businessProfileRepository.GetByUserIdAsync(user.Id, cancellationToken);
             businessProfileId = businessProfile?.Id;
+            organizationName = businessProfile?.BusinessName;
         }
         else if (user.Role == UserRole.Charity)
         {
             var charityProfile = await charityProfileRepository.GetByUserIdAsync(user.Id, cancellationToken);
             charityProfileId = charityProfile?.Id;
+            organizationName = charityProfile?.Name;
         }
 
         var token = jwtTokenGenerator.GenerateToken(user, businessProfileId, charityProfileId);
@@ -167,6 +175,8 @@ public class AuthService(
             user.Name,
             user.Email,
             user.Role.ToString(),
+            user.ProfileImage,
+            organizationName,
             token);
     }
 

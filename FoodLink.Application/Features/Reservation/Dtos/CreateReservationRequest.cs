@@ -17,6 +17,7 @@ public class CreateReservationItemRequest
 
 public class ReservationFilterRequest
 {
+    public Guid? DonationId { get; set; }
     public string? Status { get; set; }
     public bool? IsExpired { get; set; }
 }
