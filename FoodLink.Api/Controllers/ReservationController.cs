@@ -47,17 +47,17 @@ public class ReservationController(IReservationService reservationService,
         return Ok(result);
     }
 
-    [HttpGet]
-    [Authorize(Roles = "Business,Admin")]
-    public async Task<IActionResult> ReservationsByDonationId(
-        [FromQuery] ReservationFilterRequest filter
-    )
-    {
-        var charityId = userContext.CharityProfileId
-            ?? throw new Exception("User does not have a charity profile.");
-        var result = await reservationQueries.GetReservationsAsync(charityId, filter);
-        return Ok(result);
-    }
+    // [HttpGet]
+    // [Authorize(Roles = "Business,Admin")]
+    // public async Task<IActionResult> ReservationsByDonationId(
+    //     [FromQuery] ReservationFilterRequest filter
+    // )
+    // {
+    //     var charityId = userContext.CharityProfileId
+    //         ?? throw new Exception("User does not have a charity profile.");
+    //     var result = await reservationQueries.GetReservationsAsync(charityId, filter);
+    //     return Ok(result);
+    // }
 
     [HttpGet]
     [Authorize(Roles = "Admin,Business")]

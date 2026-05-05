@@ -1,11 +1,14 @@
 using FoodLink.Domain.Common;
 using FoodLink.Domain.Enums;
 using FoodLink.Domain.Common.Exceptions;
+using FoodLink.Domain.Entities.Profiles;
+
 namespace FoodLink.Domain.Entities;
 
 public class Donation : AuditableEntity
 {
     public Guid BusinessProfileId { get; private set; }
+    public BusinessProfile BusinessProfile { get; private set; } = default!;
     public string Title { get; private set; } = string.Empty;
     public string Description { get; private set; } = string.Empty;
     public DateTime ExpiryDate { get; private set; }
@@ -22,9 +25,7 @@ public class Donation : AuditableEntity
                     string description,
                     DateTime expiry,
                     string imageUrl) : base(Guid.NewGuid())
-    {
-        if (expiry <= DateTime.UtcNow) throw new DomainException("Expiry must be in the future.");
-        
+    {        
         if (businessProfileId == Guid.Empty)
             throw new DomainException("Business profile is required.");
 

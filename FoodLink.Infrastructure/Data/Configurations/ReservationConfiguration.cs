@@ -14,11 +14,15 @@ public class ReservationConfiguration : IEntityTypeConfiguration<Reservation>
         var navigation = builder.Metadata.FindNavigation(nameof(Reservation.Items));
         navigation?.SetPropertyAccessMode(PropertyAccessMode.Field);
 
-        // Relationship to Charity (User)
-        builder.HasOne<CharityProfile>()
+        builder.HasOne(r => r.Charity)
                .WithMany()
                .HasForeignKey(r => r.CharityId)
-               .OnDelete(DeleteBehavior.Restrict); // Don't delete charity if reservation exists
+               .OnDelete(DeleteBehavior.Restrict);
+
+        builder.HasOne(r => r.Donation)
+               .WithMany()
+               .HasForeignKey(r => r.DonationId)
+               .OnDelete(DeleteBehavior.Restrict);
 
         builder.HasMany(r => r.Items)
                .WithOne()

@@ -1,13 +1,17 @@
 using FoodLink.Domain.Common;
 using FoodLink.Domain.Enums;
 using FoodLink.Domain.Common.Exceptions;
+using FoodLink.Domain.Entities.Profiles;
 
 namespace FoodLink.Domain.Entities;
 
 public class Reservation : AuditableEntity
 {
     public Guid CharityId { get; private set; }
+    public CharityProfile Charity { get; private set; } = default!;
+
     public Guid DonationId { get; private set; }
+    public Donation Donation { get; private set; } = default!;
     
     public ReservationStatus Status { get; private set; }
     public DateTime? PickedUpAt { get; private set; }
