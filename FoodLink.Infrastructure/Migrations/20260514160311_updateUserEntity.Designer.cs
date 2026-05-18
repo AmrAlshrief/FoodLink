@@ -3,6 +3,7 @@ using System;
 using FoodLink.Infrastructure.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -10,9 +11,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace FoodLink.Infrastructure.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260514160311_updateUserEntity")]
+    partial class updateUserEntity
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder.HasAnnotation("ProductVersion", "10.0.5");
@@ -63,11 +66,11 @@ namespace FoodLink.Infrastructure.Migrations
 
                     b.HasKey("Id");
 
+                    b.HasIndex("BusinessProfileId");
+
+                    b.HasIndex("ExpiryDate");
+
                     b.HasIndex("Status");
-
-                    b.HasIndex("BusinessProfileId", "Status");
-
-                    b.HasIndex("ExpiryDate", "Status");
 
                     b.ToTable("Donations", (string)null);
                 });
@@ -215,7 +218,6 @@ namespace FoodLink.Infrastructure.Migrations
 
                     b.Property<string>("Address")
                         .IsRequired()
-                        .HasMaxLength(200)
                         .HasColumnType("TEXT");
 
                     b.Property<double>("AverageRating")
@@ -235,12 +237,10 @@ namespace FoodLink.Infrastructure.Migrations
 
                     b.Property<string>("LicenseNumber")
                         .IsRequired()
-                        .HasMaxLength(50)
                         .HasColumnType("TEXT");
 
                     b.Property<string>("Name")
                         .IsRequired()
-                        .HasMaxLength(100)
                         .HasColumnType("TEXT");
 
                     b.Property<int>("NoShowCount")
@@ -253,8 +253,6 @@ namespace FoodLink.Infrastructure.Migrations
                         .HasColumnType("TEXT");
 
                     b.HasKey("Id");
-
-                    b.HasIndex("UserId");
 
                     b.ToTable("CharityProfiles");
                 });
@@ -294,11 +292,9 @@ namespace FoodLink.Infrastructure.Migrations
 
                     b.HasKey("Id");
 
+                    b.HasIndex("CharityId");
+
                     b.HasIndex("DonationId");
-
-                    b.HasIndex("Status");
-
-                    b.HasIndex("CharityId", "Status");
 
                     b.ToTable("Reservations");
                 });
@@ -457,30 +453,17 @@ namespace FoodLink.Infrastructure.Migrations
 
             modelBuilder.Entity("FoodLink.Domain.Entities.Profiles.BusinessProfile", b =>
                 {
-                    b.HasOne("FoodLink.Domain.Entities.User", "User")
+                    b.HasOne("FoodLink.Domain.Entities.User", null)
                         .WithOne()
                         .HasForeignKey("FoodLink.Domain.Entities.Profiles.BusinessProfile", "UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
-
-                    b.Navigation("User");
-                });
-
-            modelBuilder.Entity("FoodLink.Domain.Entities.Profiles.CharityProfile", b =>
-                {
-                    b.HasOne("FoodLink.Domain.Entities.User", "User")
-                        .WithMany()
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("User");
                 });
 
             modelBuilder.Entity("FoodLink.Domain.Entities.Reservation", b =>
                 {
                     b.HasOne("FoodLink.Domain.Entities.Profiles.CharityProfile", "Charity")
-                        .WithMany("Reservations")
+                        .WithMany()
                         .HasForeignKey("CharityId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
@@ -523,11 +506,6 @@ namespace FoodLink.Infrastructure.Migrations
             modelBuilder.Entity("FoodLink.Domain.Entities.Donation", b =>
                 {
                     b.Navigation("Items");
-                });
-
-            modelBuilder.Entity("FoodLink.Domain.Entities.Profiles.CharityProfile", b =>
-                {
-                    b.Navigation("Reservations");
                 });
 
             modelBuilder.Entity("FoodLink.Domain.Entities.Reservation", b =>

@@ -11,11 +11,15 @@ public class ReservationConfiguration : IEntityTypeConfiguration<Reservation>
     {
         builder.HasKey(r => r.Id);
 
+        builder.HasIndex(r => r.Status);
+
+        builder.HasIndex(r => new { r.CharityId, r.Status });
+
         var navigation = builder.Metadata.FindNavigation(nameof(Reservation.Items));
         navigation?.SetPropertyAccessMode(PropertyAccessMode.Field);
 
         builder.HasOne(r => r.Charity)
-               .WithMany()
+               .WithMany(c => c.Reservations)
                .HasForeignKey(r => r.CharityId)
                .OnDelete(DeleteBehavior.Restrict);
 

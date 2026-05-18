@@ -33,8 +33,8 @@ public class DonationConfiguration : IEntityTypeConfiguration<Donation>
               .IsRequired();
 
        builder.HasIndex(d => d.Status);
-       builder.HasIndex(d => d.ExpiryDate);
-       builder.HasIndex(d => d.BusinessProfileId);
+       builder.HasIndex(d => new { d.ExpiryDate, d.Status });
+       builder.HasIndex(d => new { d.BusinessProfileId, d.Status });
 
        builder.HasMany(d => d.Items)
               .WithOne()

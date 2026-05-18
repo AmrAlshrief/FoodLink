@@ -1,5 +1,6 @@
 using FoodLink.Application.Common.Interfaces.Repositories;
 using FoodLink.Domain.Entities;
+using FoodLink.Domain.Enums;
 using FoodLink.Infrastructure.Data;
 using Microsoft.EntityFrameworkCore;
 
@@ -55,4 +56,19 @@ public class DonationRepository(AppDbContext dbContext) : IDonationRepository
             
         return donations.OrderByDescending(d => d.CreatedAtUtc).ToList();
     }
+
+    public async Task<List<Donation>> GetExpiredActiveDonationsAsync(
+    DateTime utcNow,
+    CancellationToken cancellationToken = default)
+    {
+        return await dbContext.Donations
+            .Include(d => d.Items)
+            .Where(d => d.ExpiryDate <= utcNow &&
+                (d.Status == DonationStatus.Available ||
+                d.Status == DonationStatus.PartiallyReserved ||
+                d.Status == DonationStatus.FullyReserved))
+            .ToListAsync(cancellationToken);
+    }
+
+    
 }

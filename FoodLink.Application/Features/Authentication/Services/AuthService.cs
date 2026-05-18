@@ -144,6 +144,9 @@ public class AuthService(
         var user = await userRepository.GetByEmailAsync(email, cancellationToken)
             ?? throw new DomainException("Invalid credentials");
 
+        if (user.IsSuspended)
+            throw new DomainException("Your account has been suspended.");
+
         var isValid = passwordHasher.Verify(request.Password, user.PasswordHash);
 
         if (!isValid)

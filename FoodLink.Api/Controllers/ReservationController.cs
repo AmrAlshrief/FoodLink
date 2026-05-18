@@ -78,11 +78,14 @@ public class ReservationController(IReservationService reservationService,
         [FromQuery] ReservationFilterRequest filter,
         CancellationToken cancellationToken)
     {
-        var businessId = userContext.BusinessProfileId
-            ?? throw new Exception("User does not have a business profile.");
+        var isAdmin = User.IsInRole("Admin");
+        var businessId = userContext.BusinessProfileId;
+
+        if (!isAdmin && businessId == null)
+            throw new Exception("User does not have a business profile.");
 
         var result = await reservationQueries.GetReservationsByDonationAsync(
-            businessId,
+            isAdmin ? null : businessId,
             donationId,
             filter,
             cancellationToken);

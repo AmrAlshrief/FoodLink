@@ -9,6 +9,9 @@ public class CharityProfile : Profile
     public string LicenseNumber { get; private set; }
     public string Address { get; private set; }
     public int NoShowCount { get; private set; }
+    
+    private readonly List<Reservation> _reservations = new();
+    public IReadOnlyCollection<Reservation> Reservations => _reservations.AsReadOnly();
 
     private CharityProfile() { }
 

@@ -210,6 +210,19 @@ public class DonationService(
         await unitOfWork.SaveChangesAsync(cancellationToken);
     }
 
+    public async Task HandleExpiredDonationsAsync(CancellationToken cancellationToken = default)
+    {
+        var expiredDonations = await donationRepository
+            .GetExpiredActiveDonationsAsync(DateTime.UtcNow, cancellationToken);
+
+        foreach (var donation in expiredDonations)
+        {
+            donation.Expire();
+        }
+
+        await unitOfWork.SaveChangesAsync(cancellationToken);
+    }
+
     private DonationResponse MapToResponse(Donation donation)
     {
         return new DonationResponse

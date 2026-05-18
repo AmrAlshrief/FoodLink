@@ -31,16 +31,19 @@ public class ReservationQueries(AppDbContext dbContext) : IReservationQueries
     }
 
     public async Task<List<ReservationResponse>> GetReservationsByDonationAsync(
-        Guid businessId,
+        Guid? businessId,
         Guid donationId,
         ReservationFilterRequest filter,
         CancellationToken cancellationToken = default)
     {
-        var donationExists = await dbContext.Donations
-            .AsNoTracking()
-            .AnyAsync(
-                d => d.Id == donationId && d.BusinessProfileId == businessId,
-                cancellationToken);
+        var donationExistsQuery = dbContext.Donations.AsNoTracking().Where(d => d.Id == donationId);
+
+        if (businessId.HasValue)
+        {
+            donationExistsQuery = donationExistsQuery.Where(d => d.BusinessProfileId == businessId.Value);
+        }
+
+        var donationExists = await donationExistsQuery.AnyAsync(cancellationToken);
 
         if (!donationExists)
             throw new DomainException("Donation not found or you are not allowed to access it.");
@@ -64,29 +67,42 @@ public class ReservationQueries(AppDbContext dbContext) : IReservationQueries
                 ExpiresAt = r.ExpiresAt,
                 PickedUpAt = r.PickedUpAt,
 
-                Donation = dbContext.Donations
-                    .Where(d => d.Id == r.DonationId)
-                    .Select(d => new DonationSummaryDto
-                    {
-                        Id = d.Id,
-                        Title = d.Title,
-                        ImageUrl = d.ImageUrl,
+                // Donation = dbContext.Donations
+                //     .Where(d => d.Id == r.DonationId)
+                //     .Select(d => new DonationSummaryDto
+                //     {
+                //         Id = d.Id,
+                //         Title = d.Title,
+                //         ImageUrl = d.ImageUrl,
 
-                        BusinessName = dbContext.BusinessProfiles
-                            .Where(b => b.Id == d.BusinessProfileId)
-                            .Select(b => b.BusinessName)
-                            .FirstOrDefault() ?? string.Empty
-                    })
-                    .FirstOrDefault()!,
+                //         BusinessName = dbContext.BusinessProfiles
+                //             .Where(b => b.Id == d.BusinessProfileId)
+                //             .Select(b => b.BusinessName)
+                //             .FirstOrDefault() ?? string.Empty
+                //     })
+                //     .FirstOrDefault()!,
 
-                Charity = dbContext.CharityProfiles
-                    .Where(c => c.Id == r.CharityId)
-                    .Select(c => new CharitySummaryDto
-                    {
-                        Id = c.Id,
-                        Name = c.Name
-                    })
-                    .FirstOrDefault()!,
+                // Charity = dbContext.CharityProfiles
+                //     .Where(c => c.Id == r.CharityId)
+                //     .Select(c => new CharitySummaryDto
+                //     {
+                //         Id = c.Id,
+                //         Name = c.Name
+                //     })
+                //     .FirstOrDefault()!,
+
+                Donation = new DonationSummaryDto
+                {
+                    Id = r.Donation.Id,
+                    Title = r.Donation.Title,
+                    ImageUrl = r.Donation.ImageUrl,
+                    BusinessName = r.Donation.BusinessProfile.BusinessName ?? string.Empty
+                },
+                Charity = new CharitySummaryDto
+                {
+                    Id = r.Charity.Id,
+                    Name = r.Charity.Name
+                },
 
                 Items = r.Items.Select(i => new ReservationItemResponse
                 {

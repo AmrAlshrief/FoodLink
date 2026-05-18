@@ -12,7 +12,7 @@ public class BusinessProfileConfiguration : IEntityTypeConfiguration<BusinessPro
         builder.HasKey(bp => bp.Id);
         
         // Link to User
-        builder.HasOne<User>()
+        builder.HasOne(bp => bp.User)
                .WithOne()
                .HasForeignKey<BusinessProfile>(bp => bp.UserId)
                .OnDelete(DeleteBehavior.Cascade);

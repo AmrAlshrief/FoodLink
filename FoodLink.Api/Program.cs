@@ -6,6 +6,7 @@ using FoodLink.Application.Common.Interfaces;
 using FoodLink.Application.Common;
 using Microsoft.OpenApi;
 using FoodLink.Api.Common.Middleware;
+using FoodLink.Api.BackgroundServices;
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddControllers();
@@ -43,6 +44,7 @@ builder.Services.AddScoped<IUserContext, UserContext>();
 // Plug in our Infrastructure Layer
 builder.Services.AddInfrastructureServices(builder.Configuration);
 builder.Services.AddApplicationServices();
+builder.Services.AddHostedService<FoodLinkBackgroundWorker>();
 
 
 builder.Services.AddCors(options =>

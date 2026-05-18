@@ -74,6 +74,7 @@ public static class DependencyInjection
         services.AddScoped<IUnitOfWork, UnitOfWork>();
 
         services.AddScoped<IReservationQueries, ReservationQueries>();
+        services.AddScoped<IAdminQueries, AdminQueries>();
 
         // 4. Register Authentication Services
         services.AddSingleton<IPasswordHasher, PasswordHasher>();

@@ -1,6 +1,5 @@
 using FoodLink.Domain.Common;
 using FoodLink.Domain.Enums;
-using FoodLink.Domain.Entities.Profiles;
 using FoodLink.Domain.Common.Exceptions;
 
 namespace FoodLink.Domain.Entities;
@@ -12,6 +11,8 @@ public class User : AuditableEntity
     public string PasswordHash { get; private set; }
     public UserRole Role { get; private set; }
     public string Phone { get; private set; }
+    //public bool IsVerified { get; set; } = false;
+    public bool IsSuspended { get; private set; } = false; //suspend
     public string? ProfileImage { get; private set; }
 
     private User(){}
@@ -64,6 +65,22 @@ public class User : AuditableEntity
     public void SetProfileImage(string imageUrl)
     {
         ProfileImage = imageUrl;
+    }
+
+    public void Suspend()
+    {
+        if (IsSuspended)
+            throw new DomainException("User is already suspended.");
+
+        IsSuspended = true;
+    }
+
+    public void Reactivate()
+    {
+        if (!IsSuspended)
+            throw new DomainException("User is not suspended.");
+
+        IsSuspended = false;
     }
 
 }

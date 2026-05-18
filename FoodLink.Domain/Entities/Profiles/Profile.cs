@@ -5,7 +5,7 @@ namespace FoodLink.Domain.Entities.Profiles;
 public abstract class Profile : AuditableEntity
 {
     public Guid UserId { get; protected set; }
-
+    public User User { get; protected set; } 
     public double AverageRating { get; protected set; }
     public int RatingCount { get; protected set; }
 
