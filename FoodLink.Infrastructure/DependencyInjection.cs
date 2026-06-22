@@ -9,6 +9,8 @@ using FoodLink.Infrastructure.Data.Repositories;
 using FoodLink.Infrastructure.Services.Authentication;
 using FoodLink.Infrastructure.Services.ImageUpload;
 using FoodLink.Infrastructure.Identity;
+using FoodLink.Application.Features.Charities;
+using FoodLink.Application.Features.Businesses;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
@@ -71,10 +73,14 @@ public static class DependencyInjection
         services.AddScoped<IBusinessProfileRepository, BusinessProfileRepository>();
         services.AddScoped<ICharityProfileRepository, CharityProfileRepository>();  
         services.AddScoped<IReservationRepository, ReservationRepository>();
+        services.AddScoped<ICharityRepository, CharityRepository>();
+        services.AddScoped<IBusinessRepository, BusinessRepository>();
         services.AddScoped<IUnitOfWork, UnitOfWork>();
 
         services.AddScoped<IReservationQueries, ReservationQueries>();
         services.AddScoped<IAdminQueries, AdminQueries>();
+        services.AddScoped<ICharityQueries, CharityQueries>();
+        services.AddScoped<IBusinessQueries, BusinessQueries>();
 
         // 4. Register Authentication Services
         services.AddSingleton<IPasswordHasher, PasswordHasher>();

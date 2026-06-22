@@ -238,7 +238,9 @@ public class DonationService(
                 Id = i.Id,  
                 Name = i.Name, 
                 Quantity = i.AvailableQuantity, 
-                Unit = i.Unit ,
+                TotalQuantity = i.TotalQuantity,
+                ReservedQuantity = i.ReservedQuantity,
+                Unit = i.Unit,
                 ImageUrl = i.ImageUrl
             }).ToList()
         };

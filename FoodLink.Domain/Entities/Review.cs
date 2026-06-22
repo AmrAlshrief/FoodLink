@@ -6,29 +6,58 @@ namespace FoodLink.Domain.Entities;
 public class Review : AuditableEntity
 {
     public Guid ReservationId { get; private set; }
-    public Guid ReviewerId { get; private set; } // The User ID of the person writing it
-    public Guid TargetId { get; private set; }   // The User ID of the person receiving it
-    
-    public int Rating { get; private set; }      // Constraint: 1 to 5
+
+    public Guid ReviewerId { get; private set; }
+
+    public Guid TargetId { get; private set; }
+
+    public ReviewType Type { get; private set; }
+
+    public int Rating { get; private set; }
+
     public string? Comment { get; private set; }
+
+    public Reservation Reservation { get; private set; } = null!;
 
     private Review() { }
 
-    public Review(Guid reservationId, Guid reviewerId, Guid targetId, int rating, string? comment) 
+    private Review(
+        Guid reservationId,
+        Guid reviewerId,
+        Guid targetId,
+        ReviewType type,
+        int rating,
+        string? comment)
         : base(Guid.NewGuid())
     {
-        // Business Rule: Standardize the rating scale
-        if (rating < 1 || rating > 5) 
+        if (rating < 1 || rating > 5)
             throw new DomainException("Rating must be between 1 and 5.");
 
-        // Business Rule: A user shouldn't be able to rate themselves
         if (reviewerId == targetId)
             throw new DomainException("You cannot rate yourself.");
 
         ReservationId = reservationId;
         ReviewerId = reviewerId;
         TargetId = targetId;
+        Type = type;
         Rating = rating;
         Comment = comment;
+    }
+
+    public static Review Create(
+        Guid reservationId,
+        Guid reviewerId,
+        Guid targetId,
+        ReviewType type,
+        int rating,
+        string? comment)
+    {
+        return new Review(
+            reservationId,
+            reviewerId,
+            targetId,
+            type,
+            rating,
+            comment);
     }
 }

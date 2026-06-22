@@ -68,6 +68,10 @@ public class ExceptionHandlingMiddleware(RequestDelegate next, ILogger<Exception
         {
             await WriteErrorAsync(context, HttpStatusCode.BadRequest, ex.Message);
         }
+        catch (NotFoundException ex)
+        {
+            await WriteErrorAsync(context, HttpStatusCode.NotFound, ex.Message);
+        }
         catch (UnauthorizedAccessException ex)
         {
             await WriteErrorAsync(context, HttpStatusCode.Forbidden, ex.Message);

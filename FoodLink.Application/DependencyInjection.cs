@@ -2,7 +2,8 @@ using FoodLink.Application.Features.Authentication.Services;
 using FoodLink.Application.Features.Donations;
 using FoodLink.Application.Features.Account.Services;
 using FoodLink.Application.Common.Interfaces.Services;
-using FoodLink.Application.Features.Charity.Services;
+using FoodLink.Application.Features.Charities;
+using FoodLink.Application.Features.Businesses;
 using FoodLink.Application.Features.Dashboard.Admin.Services;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -18,7 +19,7 @@ public static class DependencyInjection
         services.AddScoped<IReservationService, ReservationService>();
         services.AddScoped<IAdminService, AdminService>();
         services.AddScoped<ICharityService, CharityService>();
-
+        services.AddScoped<IBusinessService, BusinessService>();
 
         return services;
     }
