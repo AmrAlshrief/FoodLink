@@ -26,7 +26,7 @@ public class ReservationController(IReservationService reservationService,
     public async Task<IActionResult> CancelReservation(Guid id)
     {
         await reservationService.CancelReservationAsync(id);
-        return NoContent();
+        return Ok();
     }
 
     [HttpPut("{id}/pickup")]
@@ -34,7 +34,7 @@ public class ReservationController(IReservationService reservationService,
     public async Task<IActionResult> MarkPickedUp(Guid id)
     {
         await reservationService.MarkPickedUpAsync(id);
-        return NoContent();
+        return Ok();
     }
 
     [HttpGet("me")]

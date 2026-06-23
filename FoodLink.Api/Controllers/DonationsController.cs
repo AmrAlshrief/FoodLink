@@ -44,7 +44,7 @@ public class DonationsController(IDonationService donationService, IUserContext 
         };
 
         await donationService.AddItemAsync(donationId, request);
-        return NoContent();
+        return Ok();
     }
 
     [HttpGet]
@@ -92,7 +92,7 @@ public class DonationsController(IDonationService donationService, IUserContext 
         };
 
         await donationService.UpdateDonationAsync(request);
-        return NoContent();
+        return Ok();
     }
 
     [HttpPut("{donationId}/items/{itemId}")]
@@ -109,7 +109,7 @@ public class DonationsController(IDonationService donationService, IUserContext 
         };
 
         await donationService.UpdateItemAsync(donationId, itemId, request);
-        return NoContent();
+        return Ok();
     }
 
     [HttpDelete("{donationId}/items/{itemId}")]
@@ -117,7 +117,7 @@ public class DonationsController(IDonationService donationService, IUserContext 
     public async Task<IActionResult> RemoveItem(Guid donationId, Guid itemId)
     {
         await donationService.RemoveItemAsync(donationId, itemId);
-        return NoContent();
+        return Ok();
     }
 
     [HttpDelete("{donationId}")]
@@ -125,7 +125,7 @@ public class DonationsController(IDonationService donationService, IUserContext 
     public async Task<IActionResult> RemoveDonation(Guid donationId)
     {
         await donationService.RemoveDonationAsync(donationId);
-        return NoContent();
+        return Ok();
     }
 
     [HttpPost("{id}/cancel")]
@@ -133,6 +133,6 @@ public class DonationsController(IDonationService donationService, IUserContext 
     public async Task<IActionResult> CancelDonation(Guid id, CancellationToken cancellationToken)
     {
         await donationService.CancelDonationAsync(id, cancellationToken);
-        return NoContent();
+        return Ok();
     }
 }

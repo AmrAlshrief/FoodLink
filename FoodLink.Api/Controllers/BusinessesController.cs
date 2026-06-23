@@ -43,6 +43,6 @@ public class BusinessesController(IBusinessService businessService, IUserContext
         }
 
         await businessService.UpdateMyProfileAsync(businessProfileId.Value, request, ct);
-        return NoContent();
+        return Ok();
     }
 }

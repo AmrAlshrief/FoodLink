@@ -19,21 +19,21 @@ public class AdminController(IAdminService adminService) : ControllerBase
     public async Task<IActionResult> ProcessExpiredReservations(CancellationToken cancellationToken)
     {
         await adminService.ProcessExpiredReservationsAsync(cancellationToken);
-        return NoContent();
+        return Ok();
     }
 
     [HttpPost("users/{userId}/suspend")]
     public async Task<IActionResult> SuspendUser(Guid userId, CancellationToken cancellationToken)
     {
         await adminService.SuspendUserAsync(userId, cancellationToken);
-        return NoContent();
+        return Ok();
     }
 
     [HttpPost("users/{userId}/reactivate")]
     public async Task<IActionResult> ReactivateUser(Guid userId, CancellationToken cancellationToken)
     {
         await adminService.ReactivateUserAsync(userId, cancellationToken);
-        return NoContent();
+        return Ok();
     }
 
     [HttpGet("dashboard/stats")]

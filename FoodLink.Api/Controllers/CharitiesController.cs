@@ -43,6 +43,6 @@ public class CharitiesController(ICharityService charityService, IUserContext us
         }
 
         await charityService.UpdateMyProfileAsync(charityProfileId.Value, request, ct);
-        return NoContent();
+        return Ok();
     }
 }
