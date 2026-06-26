@@ -1,4 +1,5 @@
 using FoodLink.Application.Features.Charities;
+using FoodLink.Application.Features.Charities.Interfaces;
 using FoodLink.Domain.Entities.Profiles;
 using Microsoft.EntityFrameworkCore;
 
@@ -15,7 +16,6 @@ public class CharityRepository(AppDbContext dbContext) : ICharityRepository
 
     public Task UpdateAsync(CharityProfile charity, CancellationToken ct = default)
     {
-        // Entity is tracked by DbContext; save changes is handled by UnitOfWork.
         return Task.CompletedTask;
     }
 }

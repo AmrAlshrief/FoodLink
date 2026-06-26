@@ -1,7 +1,9 @@
 using FoodLink.Application.Common.Interfaces.Repositories;
 using FoodLink.Application.Common.Interfaces;
-using FoodLink.Application.Common.Interfaces.Services;
 using FoodLink.Application.Features.Authentication.DTOs;
+using FoodLink.Application.Features.Authentication.Interfaces;
+using FoodLink.Application.Features.Businesses.Interfaces;
+using FoodLink.Application.Features.Charities.Interfaces;
 using FoodLink.Domain.Common.Exceptions;
 using FoodLink.Domain.Entities;
 using FoodLink.Domain.Entities.Profiles;

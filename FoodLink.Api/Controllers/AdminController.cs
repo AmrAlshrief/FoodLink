@@ -1,7 +1,7 @@
 using FoodLink.Application.Features.Account.Dtos;
-using FoodLink.Application.Features.Account.Services;
-using FoodLink.Application.Common.Interfaces.Services;
+using FoodLink.Application.Features.Dashboard.Admin.Interfaces;
 using FoodLink.Application.Features.Dashboard.Admin.DTOs;
+using FoodLink.Application.Features.Reservation.Dtos;
 using FoodLink.Api.Contracts.DTOs;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -97,5 +97,25 @@ public class AdminController(IAdminService adminService) : ControllerBase
     {
         var users = await adminService.GetUsersAsync(request, cancellationToken);
         return Ok(users);
+    }
+
+    [HttpGet("businesses/{businessId}/donations")]
+    public async Task<IActionResult> GetBusinessDonations(
+        Guid businessId,
+        [FromQuery] AdminDonationFilterRequest request,
+        CancellationToken cancellationToken)
+    {
+        var donations = await adminService.GetBusinessDonationsAsync(businessId, request, cancellationToken);
+        return Ok(donations);
+    }
+
+    [HttpGet("charities/{charityId}/reservations")]
+    public async Task<IActionResult> GetCharityReservations(
+        Guid charityId,
+        [FromQuery] ReservationFilterRequest request,
+        CancellationToken cancellationToken)
+    {
+        var reservations = await adminService.GetCharityReservationsAsync(charityId, request, cancellationToken);
+        return Ok(reservations);
     }
 }

@@ -1,6 +1,6 @@
-using FoodLink.Domain.Entities;
+using Donation = FoodLink.Domain.Entities.Donation;
 using FoodLink.Application.Common.Interfaces;
-using FoodLink.Application.Common.Interfaces.Services;
+using FoodLink.Application.Features.Donation.Interfaces;
 using FoodLink.Application.Common.Interfaces.Repositories;
 using FoodLink.Application.Features.Donations.Dtos;
 using FoodLink.Domain.Common.Exceptions;
@@ -29,7 +29,7 @@ public class DonationService(
                 request.ImageFileName ?? string.Empty);
         }
 
-        var donation = new Donation(
+        var donation = new FoodLink.Domain.Entities.Donation(
             businessId,
             request.Title,
             request.Description ?? string.Empty,
@@ -223,7 +223,7 @@ public class DonationService(
         await unitOfWork.SaveChangesAsync(cancellationToken);
     }
 
-    private DonationResponse MapToResponse(Donation donation)
+    private DonationResponse MapToResponse(FoodLink.Domain.Entities.Donation donation)
     {
         return new DonationResponse
         {

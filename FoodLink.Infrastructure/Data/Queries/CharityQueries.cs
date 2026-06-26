@@ -1,5 +1,6 @@
 using FoodLink.Application.Features.Charities;
 using FoodLink.Application.Features.Charities.DTOs;
+using FoodLink.Application.Features.Charities.Interfaces;
 using FoodLink.Domain.Enums;
 using Microsoft.EntityFrameworkCore;
 
@@ -52,7 +53,7 @@ public class CharityQueries(AppDbContext dbContext) : ICharityQueries
                 Email = c.User.Email,
                 Phone = c.User.Phone,
                 IsSuspended = c.User.IsSuspended,
-                CreatedAt = c.CreatedAtUtc.DateTime,
+                CreatedAt = c.CreatedAtUtc,
                 ActiveReservations = c.Reservations.Count(r => r.Status == ReservationStatus.Pending)
             })
             .FirstOrDefaultAsync(ct);

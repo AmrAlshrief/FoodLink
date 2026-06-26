@@ -1,5 +1,5 @@
 using FoodLink.Application.Features.Account.Dtos;
-using FoodLink.Application.Features.Account.Services;
+using FoodLink.Application.Features.Account.Interfaces;
 using FoodLink.Api.Contracts.DTOs;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;

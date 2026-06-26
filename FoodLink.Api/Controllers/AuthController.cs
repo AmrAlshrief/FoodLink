@@ -1,4 +1,4 @@
-using FoodLink.Application.Features.Authentication.Services;
+using FoodLink.Application.Features.Authentication.Interfaces;
 using FoodLink.Application.Features.Authentication.DTOs;
 using FoodLink.Api.Contracts.DTOs;
 using Microsoft.AspNetCore.Mvc;

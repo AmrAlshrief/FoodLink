@@ -1,9 +1,14 @@
 using FoodLink.Application.Common.Interfaces;
 using FoodLink.Application.Common.Interfaces.Repositories;
-using FoodLink.Application.Common.Interfaces.Services;
+using FoodLink.Application.Features.Reservation.Interfaces;
 using FoodLink.Application.Features.Reservation.Dtos;
+using FoodLink.Application.Features.Donation.Interfaces;
+using FoodLink.Application.Features.Charities.Interfaces;
 using FoodLink.Domain.Common.Exceptions;
-using FoodLink.Domain.Entities;
+using Reservation = FoodLink.Domain.Entities.Reservation;
+using Donation = FoodLink.Domain.Entities.Donation;
+
+namespace FoodLink.Application.Features.Reservation.Services;
 
 public class ReservationService(
     IReservationRepository reservationRepository,
@@ -30,7 +35,7 @@ public class ReservationService(
             expiresAt = donation.ExpiryDate;
         }
 
-        var reservation = new Reservation(charityId, donation.Id, expiresAt);
+        var reservation = new FoodLink.Domain.Entities.Reservation(charityId, donation.Id, expiresAt);
 
         foreach (var itemDto in request.Items)
         {
@@ -132,7 +137,7 @@ public class ReservationService(
         return reservations.Select(MapToResponse).ToList();
     }
 
-    private static ReservationResponse MapToResponse(Reservation reservation)
+    private static ReservationResponse MapToResponse(FoodLink.Domain.Entities.Reservation reservation)
     {
         return new ReservationResponse
         {
@@ -151,6 +156,5 @@ public class ReservationService(
             }).ToList()
         };
     }
-
 
 }

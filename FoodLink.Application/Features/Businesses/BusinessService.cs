@@ -1,5 +1,6 @@
 using FoodLink.Application.Common.Interfaces.Repositories;
 using FoodLink.Application.Features.Businesses.DTOs;
+using FoodLink.Application.Features.Businesses.Interfaces;
 using FoodLink.Domain.Common.Exceptions;
 
 namespace FoodLink.Application.Features.Businesses;

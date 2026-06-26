@@ -1,7 +1,7 @@
 using FoodLink.Application.Common.Interfaces;
-using FoodLink.Application.Common.Interfaces.Services;
 using FoodLink.Application.Common.Interfaces.Repositories;
 using FoodLink.Application.Features.Account.Dtos;
+using FoodLink.Application.Features.Account.Interfaces;
 using FoodLink.Domain.Common.Exceptions;
 
 namespace FoodLink.Application.Features.Account.Services;

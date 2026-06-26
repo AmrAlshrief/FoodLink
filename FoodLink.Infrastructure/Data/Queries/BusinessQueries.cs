@@ -1,5 +1,6 @@
 using FoodLink.Application.Features.Businesses;
 using FoodLink.Application.Features.Businesses.DTOs;
+using FoodLink.Application.Features.Businesses.Interfaces;
 using FoodLink.Domain.Enums;
 using Microsoft.EntityFrameworkCore;
 
@@ -58,7 +59,7 @@ public class BusinessQueries(AppDbContext dbContext) : IBusinessQueries
                 Email = b.User.Email,
                 Phone = b.User.Phone,
                 IsSuspended = b.User.IsSuspended,
-                CreatedAt = b.CreatedAtUtc.DateTime,
+                CreatedAt = b.CreatedAtUtc,
                 TotalReservationsReceived = dbContext.Reservations.Count(r => r.Donation.BusinessProfileId == b.Id),
                 PickedUpCount = dbContext.Reservations.Count(r => r.Donation.BusinessProfileId == b.Id && r.Status == ReservationStatus.PickedUp),
                 NoShowCount = dbContext.Reservations.Count(r => r.Donation.BusinessProfileId == b.Id && r.Status == ReservationStatus.NoShow)

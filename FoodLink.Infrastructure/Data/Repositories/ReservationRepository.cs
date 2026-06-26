@@ -1,4 +1,4 @@
-using FoodLink.Application.Common.Interfaces.Repositories;
+using FoodLink.Application.Features.Reservation.Interfaces;
 using FoodLink.Domain.Entities;
 using FoodLink.Domain.Enums;
 using Microsoft.EntityFrameworkCore;
@@ -12,6 +12,19 @@ public class ReservationRepository(AppDbContext dbContext) : IReservationReposit
         return await dbContext.Reservations
             .Include(r => r.Items)
             .FirstOrDefaultAsync(r => r.Id == id, cancellationToken);
+    }
+
+    public async Task<Reservation?> GetByIdWithReviewDataAsync(
+    Guid id,
+    CancellationToken cancellationToken = default)
+    {
+        return await dbContext.Reservations
+            .Include(r => r.Charity)
+            .Include(r => r.Donation)
+                .ThenInclude(d => d.BusinessProfile)
+            .FirstOrDefaultAsync(
+                r => r.Id == id,
+                cancellationToken);
     }
 
     public async Task<List<Reservation>> GetByCharityIdAsync(Guid charityId, CancellationToken cancellationToken = default)

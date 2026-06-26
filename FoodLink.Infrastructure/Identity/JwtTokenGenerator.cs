@@ -1,7 +1,7 @@
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
-using FoodLink.Application.Common.Interfaces.Services;
+using FoodLink.Application.Features.Authentication.Interfaces;
 using FoodLink.Domain.Entities;
 using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;

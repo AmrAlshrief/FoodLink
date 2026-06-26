@@ -1,4 +1,5 @@
 using FoodLink.Application.Features.Businesses;
+using FoodLink.Application.Features.Businesses.Interfaces;
 using FoodLink.Domain.Entities.Profiles;
 using Microsoft.EntityFrameworkCore;
 
@@ -15,7 +16,6 @@ public class BusinessRepository(AppDbContext dbContext) : IBusinessRepository
 
     public Task UpdateAsync(BusinessProfile business, CancellationToken ct = default)
     {
-        // Entity is tracked by DbContext; save changes is handled by UnitOfWork.
         return Task.CompletedTask;
     }
 }

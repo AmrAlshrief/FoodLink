@@ -1,9 +1,11 @@
 using FoodLink.Domain.Entities;
 using FoodLink.Application.Common.Interfaces;
-using FoodLink.Application.Common.Interfaces.Services;
-using FoodLink.Application.Common.Interfaces.Services.Queries;
 using FoodLink.Application.Common.Interfaces.Repositories;
 using FoodLink.Application.Features.Dashboard.Admin.DTOs;
+using FoodLink.Application.Features.Dashboard.Admin.Interfaces;
+using FoodLink.Application.Features.Donation.Interfaces;
+using FoodLink.Application.Features.Reservation.Interfaces;
+using FoodLink.Application.Features.Reservation.Dtos;
 using FoodLink.Application.Common.Models.Pagination;
 using FoodLink.Domain.Common.Exceptions;
 
@@ -14,6 +16,7 @@ public class AdminService(IUserRepository userRepository,
                           IReservationRepository reservationRepository,
                           IReservationService reservationService,
                           IAdminQueries adminQueries,
+                          IReservationQueries reservationQueries,
                           IUnitOfWork unitOfWork) : IAdminService
 {
 
@@ -107,5 +110,26 @@ public class AdminService(IUserRepository userRepository,
     CancellationToken cancellationToken = default)
     {
         return await adminQueries.GetUsersAsync(request, cancellationToken);
+    }
+
+    public async Task<PagedResponse<AdminDonationResponse>> GetBusinessDonationsAsync(
+        Guid businessId,
+        AdminDonationFilterRequest request,
+        CancellationToken cancellationToken = default)
+    {
+        if (!await adminQueries.BusinessExistsAsync(businessId, cancellationToken))
+        {
+            throw new DomainException("Business not found.");
+        }
+
+        return await adminQueries.GetBusinessDonationsAsync(businessId, request, cancellationToken);
+    }
+
+    public async Task<PagedResponse<ReservationResponse>> GetCharityReservationsAsync(
+        Guid charityId,
+        ReservationFilterRequest request,
+        CancellationToken cancellationToken = default)
+    {
+        return await reservationQueries.GetReservationsAsync(charityId, request, cancellationToken);
     }
 }

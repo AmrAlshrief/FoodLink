@@ -1,5 +1,6 @@
 using FoodLink.Application.Common.Interfaces.Repositories;
 using FoodLink.Application.Features.Charities.DTOs;
+using FoodLink.Application.Features.Charities.Interfaces;
 using FoodLink.Domain.Common.Exceptions;
 
 namespace FoodLink.Application.Features.Charities;

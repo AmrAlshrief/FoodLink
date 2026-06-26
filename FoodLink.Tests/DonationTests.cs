@@ -14,7 +14,7 @@ public class DonationTests
         var businessId = Guid.NewGuid();
         var expiry = DateTime.UtcNow.AddDays(7);
 
-        var donation = new Donation(businessId, "Vegetable Donation", "Fresh produce", expiry);
+        var donation = new Donation(businessId, "Vegetable Donation", "Fresh produce", expiry, string.Empty);
 
         Assert.Equal(businessId, donation.BusinessProfileId);
         Assert.Equal("Vegetable Donation", donation.Title);
@@ -30,13 +30,13 @@ public class DonationTests
         var businessId = Guid.NewGuid();
         var expiry = DateTime.UtcNow.AddDays(-1);
 
-        Assert.Throws<DomainException>(() => new Donation(businessId, "Expired Donation", "Old food", expiry));
+        Assert.Throws<DomainException>(() => new Donation(businessId, "Expired Donation", "Old food", expiry, string.Empty));
     }
 
     [Fact]
     public void AddItem_ShouldAddDonationItem()
     {
-        var donation = new Donation(Guid.NewGuid(), "Food Donation", "Lots of food", DateTime.UtcNow.AddDays(2));
+        var donation = new Donation(Guid.NewGuid(), "Food Donation", "Lots of food", DateTime.UtcNow.AddDays(2), string.Empty);
 
         donation.AddItem("Carrots", 10, "kg");
 
@@ -51,7 +51,7 @@ public class DonationTests
     [Fact]
     public void ReserveQuantity_WithValidAmount_ShouldReduceAvailableQuantity()
     {
-        var donation = new Donation(Guid.NewGuid(), "Food Donation", "Fresh vegetables", DateTime.UtcNow.AddDays(2));
+        var donation = new Donation(Guid.NewGuid(), "Food Donation", "Fresh vegetables", DateTime.UtcNow.AddDays(2), string.Empty);
         donation.AddItem("Tomatoes", 15, "kg");
         var item = donation.Items.First();
 
@@ -64,7 +64,7 @@ public class DonationTests
     [Fact]
     public void ReserveQuantity_WithTooLargeAmount_ShouldThrowDomainException()
     {
-        var donation = new Donation(Guid.NewGuid(), "Food Donation", "Fresh vegetables", DateTime.UtcNow.AddDays(2));
+        var donation = new Donation(Guid.NewGuid(), "Food Donation", "Fresh vegetables", DateTime.UtcNow.AddDays(2), string.Empty);
         donation.AddItem("Onions", 8, "kg");
         var item = donation.Items.First();
 

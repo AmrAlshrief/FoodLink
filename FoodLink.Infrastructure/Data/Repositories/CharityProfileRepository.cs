@@ -1,4 +1,4 @@
-using FoodLink.Application.Common.Interfaces.Repositories;
+using FoodLink.Application.Features.Charities.Interfaces;
 using FoodLink.Domain.Entities.Profiles;
 using Microsoft.EntityFrameworkCore;
 

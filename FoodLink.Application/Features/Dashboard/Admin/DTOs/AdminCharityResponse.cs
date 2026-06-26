@@ -27,5 +27,9 @@ public class AdminCharityResponse
 
     public int NoShowReservations { get; set; }
 
+    public int CancelledReservations { get; set; }
+
+    public int PendingReservations { get; set; }
+
     public DateTime CreatedAt { get; set; }
 }

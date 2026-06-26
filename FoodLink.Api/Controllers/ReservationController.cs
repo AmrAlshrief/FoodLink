@@ -1,6 +1,5 @@
-using FoodLink.Application.Common.Interfaces.Services;
+using FoodLink.Application.Features.Reservation.Interfaces;
 using FoodLink.Application.Features.Reservation.Dtos;
-using FoodLink.Application.Common.Interfaces.Services.Queries;
 using FoodLink.Application.Common.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;

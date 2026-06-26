@@ -1,3 +1,5 @@
+using FoodLink.Application.Common.Models.Pagination;
+
 namespace FoodLink.Application.Features.Reservation.Dtos;
 
 public class CreateReservationRequest
@@ -15,9 +17,10 @@ public class CreateReservationItemRequest
     public int Quantity { get; set; }
 }
 
-public class ReservationFilterRequest
+public class ReservationFilterRequest : PaginationRequest
 {
     public Guid? DonationId { get; set; }
     public string? Status { get; set; }
     public bool? IsExpired { get; set; }
 }
+

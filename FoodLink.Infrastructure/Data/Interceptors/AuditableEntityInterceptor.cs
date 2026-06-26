@@ -30,7 +30,7 @@ public class AuditableEntityInterceptor : SaveChangesInterceptor
     {
         if (context == null) return;
 
-        var utcNow = DateTimeOffset.UtcNow; 
+        var utcNow = DateTime.UtcNow; 
         
         var userId = _userContext?.UserId?.ToString() ?? "System";
 

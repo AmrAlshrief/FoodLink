@@ -1,5 +1,5 @@
 using BCrypt.Net;
-using FoodLink.Application.Common.Interfaces.Services;
+using FoodLink.Application.Features.Authentication.Interfaces;
 
 namespace FoodLink.Infrastructure.Services.Authentication;
 

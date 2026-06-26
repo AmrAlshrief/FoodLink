@@ -1,6 +1,8 @@
 using FoodLink.Application.Common.Interfaces;
-using FoodLink.Application.Features.Businesses;
+using FoodLink.Application.Features.Businesses.Interfaces;
+using FoodLink.Application.Features.Reviews.Interfaces;
 using FoodLink.Application.Features.Businesses.DTOs;
+using FoodLink.Application.Common.Models.Pagination;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -9,7 +11,7 @@ namespace FoodLink.Api.Controllers;
 [Route("api/[controller]")]
 [ApiController]
 [Authorize]
-public class BusinessesController(IBusinessService businessService, IUserContext userContext) : ControllerBase
+public class BusinessesController(IBusinessService businessService, IReviewQueries reviewQueries, IUserContext userContext) : ControllerBase
 {
     [HttpGet("{id:guid}")]
     public async Task<ActionResult<BusinessPublicProfileResponse>> GetPublicProfile(Guid id, CancellationToken ct)
@@ -44,5 +46,24 @@ public class BusinessesController(IBusinessService businessService, IUserContext
 
         await businessService.UpdateMyProfileAsync(businessProfileId.Value, request, ct);
         return Ok();
+    }
+
+    [HttpGet("me/reviews")]
+    public async Task<IActionResult> GetMyReviews(
+        [FromQuery] PaginationRequest request,
+        CancellationToken cancellationToken)
+    {
+        var userId = userContext.UserId;
+        if (!userId.HasValue)
+        {
+            return Unauthorized();
+        }
+
+        var result = await reviewQueries.GetMyBusinessReviewsAsync(
+            userId.Value,
+            request,
+            cancellationToken);
+
+        return Ok(result);
     }
 }

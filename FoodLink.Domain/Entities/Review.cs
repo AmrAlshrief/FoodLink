@@ -60,4 +60,13 @@ public class Review : AuditableEntity
             rating,
             comment);
     }
+
+    public void Update(int rating, string? comment)
+    {
+        if (rating < 1 || rating > 5)
+            throw new DomainException("Rating must be between 1 and 5.");
+
+        Rating = rating;
+        Comment = comment;
+    }
 }

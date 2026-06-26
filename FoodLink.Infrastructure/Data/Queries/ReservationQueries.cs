@@ -1,5 +1,6 @@
+using FoodLink.Application.Common.Models.Pagination;
 using FoodLink.Application.Features.Reservation.Dtos;
-using FoodLink.Application.Common.Interfaces.Services.Queries;
+using FoodLink.Application.Features.Reservation.Interfaces;
 using FoodLink.Domain.Common.Exceptions;
 using FoodLink.Domain.Enums;
 using Microsoft.EntityFrameworkCore;
@@ -17,7 +18,7 @@ public class ReservationQueries(AppDbContext dbContext) : IReservationQueries
             .ToListAsync(cancellationToken);
     }
 
-    public async Task<List<ReservationResponse>> GetReservationsAsync(
+    public async Task<PagedResponse<ReservationResponse>> GetReservationsAsync(
         Guid charityId,
         ReservationFilterRequest filter,
         CancellationToken cancellationToken = default)
@@ -27,10 +28,24 @@ public class ReservationQueries(AppDbContext dbContext) : IReservationQueries
 
         query = ApplyFilter(query, filter);
 
-        return await query.ToListAsync(cancellationToken);
+        var totalCount = await query.CountAsync(cancellationToken);
+
+        var items = await query
+            .Skip((filter.Page - 1) * filter.PageSize)
+            .Take(filter.PageSize)
+            .ToListAsync(cancellationToken);
+
+        return new PagedResponse<ReservationResponse>
+        {
+            Items = items,
+            Page = filter.Page,
+            PageSize = filter.PageSize,
+            TotalCount = totalCount,
+            TotalPages = (int)Math.Ceiling(totalCount / (double)filter.PageSize)
+        };
     }
 
-    public async Task<List<ReservationResponse>> GetReservationsByDonationAsync(
+    public async Task<PagedResponse<ReservationResponse>> GetReservationsByDonationAsync(
         Guid? businessId,
         Guid donationId,
         ReservationFilterRequest filter,
@@ -53,8 +68,23 @@ public class ReservationQueries(AppDbContext dbContext) : IReservationQueries
 
         query = ApplyFilter(query, filter);
 
-        return await query.ToListAsync(cancellationToken);
+        var totalCount = await query.CountAsync(cancellationToken);
+
+        var items = await query
+            .Skip((filter.Page - 1) * filter.PageSize)
+            .Take(filter.PageSize)
+            .ToListAsync(cancellationToken);
+
+        return new PagedResponse<ReservationResponse>
+        {
+            Items = items,
+            Page = filter.Page,
+            PageSize = filter.PageSize,
+            TotalCount = totalCount,
+            TotalPages = (int)Math.Ceiling(totalCount / (double)filter.PageSize)
+        };
     }
+
 
     private IQueryable<ReservationResponse> BuildReservationResponseQuery()
     {

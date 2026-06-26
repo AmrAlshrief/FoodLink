@@ -1,6 +1,8 @@
 using FoodLink.Application.Common.Interfaces;
-using FoodLink.Application.Features.Charities;
+using FoodLink.Application.Features.Charities.Interfaces;
+using FoodLink.Application.Features.Reviews.Interfaces;
 using FoodLink.Application.Features.Charities.DTOs;
+using FoodLink.Application.Common.Models.Pagination;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -9,7 +11,7 @@ namespace FoodLink.Api.Controllers;
 [Route("api/[controller]")]
 [ApiController]
 [Authorize]
-public class CharitiesController(ICharityService charityService, IUserContext userContext) : ControllerBase
+public class CharitiesController(ICharityService charityService, IReviewQueries reviewQueries, IUserContext userContext) : ControllerBase
 {
     [HttpGet("{id:guid}")]
     public async Task<ActionResult<CharityPublicProfileResponse>> GetPublicProfile(Guid id, CancellationToken ct)
@@ -44,5 +46,25 @@ public class CharitiesController(ICharityService charityService, IUserContext us
 
         await charityService.UpdateMyProfileAsync(charityProfileId.Value, request, ct);
         return Ok();
+    }
+
+    [HttpGet("me/reviews")]
+    [Authorize(Roles = "Charity")]
+    public async Task<IActionResult> GetMyReviews(
+        [FromQuery] PaginationRequest request,
+        CancellationToken cancellationToken)
+    {
+        var userId = userContext.UserId;
+        if (!userId.HasValue)
+        {
+            return Unauthorized();
+        }
+
+        var result = await reviewQueries.GetMyCharityReviewsAsync(
+            userId.Value,
+            request,
+            cancellationToken);
+
+        return Ok(result);
     }
 }

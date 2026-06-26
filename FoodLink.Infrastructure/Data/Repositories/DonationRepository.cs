@@ -1,4 +1,4 @@
-using FoodLink.Application.Common.Interfaces.Repositories;
+using FoodLink.Application.Features.Donation.Interfaces;
 using FoodLink.Domain.Entities;
 using FoodLink.Domain.Enums;
 using FoodLink.Infrastructure.Data;

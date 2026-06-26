@@ -1,4 +1,4 @@
-using FoodLink.Application.Common.Interfaces.Services;
+using FoodLink.Application.Features.Donation.Interfaces;
 using FoodLink.Application.Features.Donations.Dtos;
 using FoodLink.Api.Contracts.DTOs;
 using Microsoft.AspNetCore.Authorization;

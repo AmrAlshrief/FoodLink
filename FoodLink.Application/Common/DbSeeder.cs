@@ -1,7 +1,7 @@
 using Microsoft.Extensions.DependencyInjection;
 using FoodLink.Application.Common.Interfaces;
 using FoodLink.Application.Common.Interfaces.Repositories;
-using FoodLink.Application.Common.Interfaces.Services;
+using FoodLink.Application.Features.Authentication.Interfaces;
 using FoodLink.Domain.Enums;
 using FoodLink.Domain.Entities;
 namespace FoodLink.Application.Common;

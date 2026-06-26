@@ -26,7 +26,7 @@ namespace FoodLink.Infrastructure.Migrations
                     b.Property<Guid>("BusinessProfileId")
                         .HasColumnType("TEXT");
 
-                    b.Property<DateTimeOffset>("CreatedAtUtc")
+                    b.Property<DateTime>("CreatedAtUtc")
                         .HasColumnType("TEXT");
 
                     b.Property<string>("CreatedBy")
@@ -48,7 +48,7 @@ namespace FoodLink.Infrastructure.Migrations
                     b.Property<string>("LastModifiedBy")
                         .HasColumnType("TEXT");
 
-                    b.Property<DateTimeOffset?>("LastModifiedUtc")
+                    b.Property<DateTime?>("LastModifiedUtc")
                         .HasColumnType("TEXT");
 
                     b.Property<string>("Status")
@@ -117,7 +117,7 @@ namespace FoodLink.Infrastructure.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("TEXT");
 
-                    b.Property<DateTimeOffset>("CreatedAtUtc")
+                    b.Property<DateTime>("CreatedAtUtc")
                         .HasColumnType("TEXT");
 
                     b.Property<string>("CreatedBy")
@@ -129,7 +129,7 @@ namespace FoodLink.Infrastructure.Migrations
                     b.Property<string>("LastModifiedBy")
                         .HasColumnType("TEXT");
 
-                    b.Property<DateTimeOffset?>("LastModifiedUtc")
+                    b.Property<DateTime?>("LastModifiedUtc")
                         .HasColumnType("TEXT");
 
                     b.Property<string>("Message")
@@ -181,7 +181,7 @@ namespace FoodLink.Infrastructure.Migrations
                         .IsRequired()
                         .HasColumnType("TEXT");
 
-                    b.Property<DateTimeOffset>("CreatedAtUtc")
+                    b.Property<DateTime>("CreatedAtUtc")
                         .HasColumnType("TEXT");
 
                     b.Property<string>("CreatedBy")
@@ -190,7 +190,7 @@ namespace FoodLink.Infrastructure.Migrations
                     b.Property<string>("LastModifiedBy")
                         .HasColumnType("TEXT");
 
-                    b.Property<DateTimeOffset?>("LastModifiedUtc")
+                    b.Property<DateTime?>("LastModifiedUtc")
                         .HasColumnType("TEXT");
 
                     b.Property<int>("RatingCount")
@@ -221,7 +221,7 @@ namespace FoodLink.Infrastructure.Migrations
                     b.Property<double>("AverageRating")
                         .HasColumnType("REAL");
 
-                    b.Property<DateTimeOffset>("CreatedAtUtc")
+                    b.Property<DateTime>("CreatedAtUtc")
                         .HasColumnType("TEXT");
 
                     b.Property<string>("CreatedBy")
@@ -230,7 +230,7 @@ namespace FoodLink.Infrastructure.Migrations
                     b.Property<string>("LastModifiedBy")
                         .HasColumnType("TEXT");
 
-                    b.Property<DateTimeOffset?>("LastModifiedUtc")
+                    b.Property<DateTime?>("LastModifiedUtc")
                         .HasColumnType("TEXT");
 
                     b.Property<string>("LicenseNumber")
@@ -268,7 +268,7 @@ namespace FoodLink.Infrastructure.Migrations
                     b.Property<Guid>("CharityId")
                         .HasColumnType("TEXT");
 
-                    b.Property<DateTimeOffset>("CreatedAtUtc")
+                    b.Property<DateTime>("CreatedAtUtc")
                         .HasColumnType("TEXT");
 
                     b.Property<string>("CreatedBy")
@@ -283,7 +283,7 @@ namespace FoodLink.Infrastructure.Migrations
                     b.Property<string>("LastModifiedBy")
                         .HasColumnType("TEXT");
 
-                    b.Property<DateTimeOffset?>("LastModifiedUtc")
+                    b.Property<DateTime?>("LastModifiedUtc")
                         .HasColumnType("TEXT");
 
                     b.Property<DateTime?>("PickedUpAt")
@@ -345,7 +345,7 @@ namespace FoodLink.Infrastructure.Migrations
                         .HasMaxLength(500)
                         .HasColumnType("TEXT");
 
-                    b.Property<DateTimeOffset>("CreatedAtUtc")
+                    b.Property<DateTime>("CreatedAtUtc")
                         .HasColumnType("TEXT");
 
                     b.Property<string>("CreatedBy")
@@ -354,7 +354,7 @@ namespace FoodLink.Infrastructure.Migrations
                     b.Property<string>("LastModifiedBy")
                         .HasColumnType("TEXT");
 
-                    b.Property<DateTimeOffset?>("LastModifiedUtc")
+                    b.Property<DateTime?>("LastModifiedUtc")
                         .HasColumnType("TEXT");
 
                     b.Property<int>("Rating")
@@ -369,9 +369,12 @@ namespace FoodLink.Infrastructure.Migrations
                     b.Property<Guid>("TargetId")
                         .HasColumnType("TEXT");
 
+                    b.Property<int>("Type")
+                        .HasColumnType("INTEGER");
+
                     b.HasKey("Id");
 
-                    b.HasIndex("ReservationId")
+                    b.HasIndex("ReservationId", "ReviewerId", "Type")
                         .IsUnique();
 
                     b.ToTable("Reviews");
@@ -383,7 +386,7 @@ namespace FoodLink.Infrastructure.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("TEXT");
 
-                    b.Property<DateTimeOffset>("CreatedAtUtc")
+                    b.Property<DateTime>("CreatedAtUtc")
                         .HasColumnType("TEXT");
 
                     b.Property<string>("CreatedBy")
@@ -402,7 +405,7 @@ namespace FoodLink.Infrastructure.Migrations
                     b.Property<string>("LastModifiedBy")
                         .HasColumnType("TEXT");
 
-                    b.Property<DateTimeOffset?>("LastModifiedUtc")
+                    b.Property<DateTime?>("LastModifiedUtc")
                         .HasColumnType("TEXT");
 
                     b.Property<string>("Name")
@@ -513,11 +516,13 @@ namespace FoodLink.Infrastructure.Migrations
 
             modelBuilder.Entity("FoodLink.Domain.Entities.Review", b =>
                 {
-                    b.HasOne("FoodLink.Domain.Entities.Reservation", null)
-                        .WithOne()
-                        .HasForeignKey("FoodLink.Domain.Entities.Review", "ReservationId")
+                    b.HasOne("FoodLink.Domain.Entities.Reservation", "Reservation")
+                        .WithMany()
+                        .HasForeignKey("ReservationId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+
+                    b.Navigation("Reservation");
                 });
 
             modelBuilder.Entity("FoodLink.Domain.Entities.Donation", b =>
