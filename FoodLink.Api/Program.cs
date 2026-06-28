@@ -1,4 +1,5 @@
 // Program.cs
+using Serilog;
 using FoodLink.Infrastructure;
 using FoodLink.Application;
 using FoodLink.Api.Services;
@@ -7,7 +8,11 @@ using FoodLink.Application.Common;
 using Microsoft.OpenApi;
 using FoodLink.Api.Common.Middleware;
 using FoodLink.Api.BackgroundServices;
+
 var builder = WebApplication.CreateBuilder(args);
+
+builder.Host.UseSerilog((context, configuration) =>
+    configuration.ReadFrom.Configuration(context.Configuration));
 
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
@@ -45,6 +50,8 @@ builder.Services.AddScoped<IUserContext, UserContext>();
 builder.Services.AddInfrastructureServices(builder.Configuration);
 builder.Services.AddApplicationServices();
 builder.Services.AddHostedService<FoodLinkBackgroundWorker>();
+builder.Services.AddScoped<INotificationHubClient, NotificationHubClient>();
+builder.Services.AddSignalR();
 
 
 builder.Services.AddCors(options =>
@@ -52,9 +59,10 @@ builder.Services.AddCors(options =>
     options.AddPolicy("AllowAll", policy =>
     {
         policy
-            .AllowAnyOrigin()
+            .SetIsOriginAllowed(_ => true)
             .AllowAnyHeader()
-            .AllowAnyMethod();
+            .AllowAnyMethod()
+            .AllowCredentials();
     });
 });
 
@@ -73,6 +81,7 @@ app.UseCors("AllowAll");
 app.UseAuthentication();
 app.UseAuthorization();
 app.MapControllers();
+app.MapHub<FoodLink.Api.Hubs.NotificationHub>("/notificationHub");
 
 using (var scope = app.Services.CreateScope())
 {

@@ -14,6 +14,8 @@ using FoodLink.Application.Features.Businesses.Interfaces;
 using FoodLink.Application.Features.Businesses;
 using FoodLink.Application.Features.Reviews.Interfaces;
 using FoodLink.Application.Features.Reviews.Services;
+using FoodLink.Application.Features.Notifications.Interfaces;
+using FoodLink.Application.Features.Notifications.Services;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace FoodLink.Application;
@@ -30,6 +32,7 @@ public static class DependencyInjection
         services.AddScoped<ICharityService, CharityService>();
         services.AddScoped<IBusinessService, BusinessService>();
         services.AddScoped<IReviewService, ReviewService>();
+        services.AddScoped<INotificationService, NotificationService>();
 
         return services;
     }

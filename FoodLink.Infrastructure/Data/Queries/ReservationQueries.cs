@@ -31,6 +31,7 @@ public class ReservationQueries(AppDbContext dbContext) : IReservationQueries
         var totalCount = await query.CountAsync(cancellationToken);
 
         var items = await query
+            .OrderByDescending(r => r.ExpiresAt)
             .Skip((filter.Page - 1) * filter.PageSize)
             .Take(filter.PageSize)
             .ToListAsync(cancellationToken);
@@ -71,6 +72,7 @@ public class ReservationQueries(AppDbContext dbContext) : IReservationQueries
         var totalCount = await query.CountAsync(cancellationToken);
 
         var items = await query
+            .OrderByDescending(r => r.ExpiresAt)
             .Skip((filter.Page - 1) * filter.PageSize)
             .Take(filter.PageSize)
             .ToListAsync(cancellationToken);
@@ -85,7 +87,20 @@ public class ReservationQueries(AppDbContext dbContext) : IReservationQueries
         };
     }
 
+    public async Task<bool> HasPastReservationAsync(Guid charityId, Guid businessId, CancellationToken cancellationToken = default)
+    {
+        return await dbContext.Reservations
+            .AsNoTracking()
+            .AnyAsync(r => r.CharityId == charityId && r.Donation.BusinessProfileId == businessId, cancellationToken);
+    }
 
+    public async Task<List<ReservationResponse>> GetCharityHistoryWithBusinessAsync(Guid charityId, Guid businessId, CancellationToken cancellationToken = default)
+    {
+        return await BuildReservationResponseQuery()
+            .Where(r => r.Charity.Id == charityId && r.Donation.Id != Guid.Empty && dbContext.Donations.Any(d => d.Id == r.Donation.Id && d.BusinessProfileId == businessId))
+            .OrderByDescending(r => r.PickedUpAt ?? r.ExpiresAt)
+            .ToListAsync(cancellationToken);
+    }
     private IQueryable<ReservationResponse> BuildReservationResponseQuery()
     {
         return dbContext.Reservations
@@ -143,7 +158,17 @@ public class ReservationQueries(AppDbContext dbContext) : IReservationQueries
                 }).ToList(),
 
                 TotalItems = r.Items.Count,
-                TotalQuantity = r.Items.Sum(i => i.Quantity)
+                TotalQuantity = r.Items.Sum(i => i.Quantity),
+
+                Rating = dbContext.Reviews
+                    .Where(rev => rev.ReservationId == r.Id && rev.Type == ReviewType.CharityToBusiness)
+                    .Select(rev => (int?)rev.Rating)
+                    .FirstOrDefault(),
+
+                ReviewComment = dbContext.Reviews
+                    .Where(rev => rev.ReservationId == r.Id && rev.Type == ReviewType.CharityToBusiness)
+                    .Select(rev => rev.Comment)
+                    .FirstOrDefault()
             });
     }
 

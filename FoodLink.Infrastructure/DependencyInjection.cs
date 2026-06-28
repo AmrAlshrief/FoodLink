@@ -9,6 +9,7 @@ using FoodLink.Application.Features.Dashboard.Admin.Interfaces;
 using FoodLink.Application.Features.Donation.Interfaces;
 using FoodLink.Application.Features.Reservation.Interfaces;
 using FoodLink.Application.Features.Reviews.Interfaces;
+using FoodLink.Application.Features.Notifications.Interfaces;
 using FoodLink.Infrastructure.Data.Queries;
 using FoodLink.Infrastructure.Data.Repositories;
 using FoodLink.Infrastructure.Repositories;
@@ -67,6 +68,20 @@ public static class DependencyInjection
                     Encoding.UTF8.GetBytes(jwtSettings["Secret"]!)),
                 ClockSkew = TimeSpan.Zero
             };
+
+            options.Events = new JwtBearerEvents
+            {
+                OnMessageReceived = context =>
+                {
+                    var accessToken = context.Request.Query["access_token"];
+                    var path = context.HttpContext.Request.Path;
+                    if (!string.IsNullOrEmpty(accessToken) && path.StartsWithSegments("/notificationHub"))
+                    {
+                        context.Token = accessToken;
+                    }
+                    return Task.CompletedTask;
+                }
+            };
         });
         
         services.AddAuthorization();
@@ -80,6 +95,7 @@ public static class DependencyInjection
         services.AddScoped<ICharityRepository, CharityRepository>();
         services.AddScoped<IBusinessRepository, BusinessRepository>();
         services.AddScoped<IReviewRepository, ReviewRepository>();
+        services.AddScoped<INotificationRepository, NotificationRepository>();
         services.AddScoped<IUnitOfWork, UnitOfWork>();
 
         services.AddScoped<IReservationQueries, ReservationQueries>();

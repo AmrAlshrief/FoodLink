@@ -4,6 +4,7 @@ using FoodLink.Application.Features.Reservation.Interfaces;
 using FoodLink.Application.Features.Reservation.Dtos;
 using FoodLink.Application.Features.Donation.Interfaces;
 using FoodLink.Application.Features.Charities.Interfaces;
+using FoodLink.Application.Features.Notifications.Interfaces;
 using FoodLink.Domain.Common.Exceptions;
 using Reservation = FoodLink.Domain.Entities.Reservation;
 using Donation = FoodLink.Domain.Entities.Donation;
@@ -15,7 +16,8 @@ public class ReservationService(
     IDonationRepository donationRepository,
     ICharityProfileRepository charityProfileRepository,
     IUserContext userContext,
-    IUnitOfWork unitOfWork) : IReservationService
+    IUnitOfWork unitOfWork,
+    INotificationService notificationService) : IReservationService
 {
     public async Task<Guid> CreateReservationAsync(CreateReservationRequest request, CancellationToken cancellationToken = default)
     {
@@ -54,6 +56,16 @@ public class ReservationService(
         reservationRepository.Add(reservation);
         await unitOfWork.SaveChangesAsync();
 
+        if (donation.BusinessProfile != null)
+        {
+            await notificationService.CreateNotificationAsync(
+                donation.BusinessProfile.UserId,
+                "New Reservation",
+                $"A new reservation has been placed on your donation '{donation.Title}'.",
+                "Reservation",
+                reservation.Id);
+        }
+
         return reservation.Id;
     }
 
@@ -79,6 +91,16 @@ public class ReservationService(
         reservation.Cancel();
 
         await unitOfWork.SaveChangesAsync(cancellationToken);
+
+        if (donation.BusinessProfile != null)
+        {
+            await notificationService.CreateNotificationAsync(
+                donation.BusinessProfile.UserId,
+                "Reservation Cancelled",
+                $"A reservation for your donation '{donation.Title}' has been cancelled by the charity.",
+                "Reservation",
+                reservation.Id);
+        }
     }
 
     public async Task MarkPickedUpAsync(Guid reservationId, CancellationToken cancellationToken = default)
@@ -98,6 +120,17 @@ public class ReservationService(
         reservation.CompletePickup();
 
         await unitOfWork.SaveChangesAsync(cancellationToken);
+
+        var charityProfile = await charityProfileRepository.GetByIdAsync(reservation.CharityId, cancellationToken);
+        if (charityProfile != null)
+        {
+            await notificationService.CreateNotificationAsync(
+                charityProfile.UserId,
+                "Reservation Picked Up",
+                $"Your reservation for donation '{donation.Title}' has been marked as picked up.",
+                "Reservation",
+                reservation.Id);
+        }
     }
 
     public async Task HandleExpiredReservationsAsync(CancellationToken cancellationToken = default)

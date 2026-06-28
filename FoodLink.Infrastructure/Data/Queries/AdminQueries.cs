@@ -74,6 +74,7 @@ public class AdminQueries(AppDbContext dbContext) : IAdminQueries
         var totalCount = await query.CountAsync(cancellationToken);
 
         query = query
+            .OrderByDescending(c => c.CreatedAtUtc)
             .Skip((request.Page - 1) * request.PageSize)
             .Take(request.PageSize);
 
@@ -148,7 +149,7 @@ public class AdminQueries(AppDbContext dbContext) : IAdminQueries
         
     //     var totalCount = await query.CountAsync(cancellationToken);
 
-    //     query = query
+    //         .OrderByDescending(b => b.CreatedAtUtc)
     //         .Skip((request.Page - 1) * request.PageSize)
     //         .Take(request.PageSize);
 
@@ -269,6 +270,7 @@ public class AdminQueries(AppDbContext dbContext) : IAdminQueries
         var totalCount = await query.CountAsync(cancellationToken);
 
         query = query
+            .OrderByDescending(u => u.CreatedAtUtc)
             .Skip((request.Page - 1) * request.PageSize)
             .Take(request.PageSize);
 

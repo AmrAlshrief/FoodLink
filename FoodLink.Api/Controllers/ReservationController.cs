@@ -92,5 +92,20 @@ public class ReservationController(IReservationService reservationService,
         return Ok(result);
     }
 
+    [HttpGet("history/business/{businessId}")]
+    [Authorize(Roles = "Charity")]
+    public async Task<IActionResult> GetHistoryWithBusiness(
+        Guid businessId,
+        CancellationToken cancellationToken)
+    {
+        var charityId = userContext.CharityProfileId
+            ?? throw new Exception("User does not have a charity profile.");
 
+        var result = await reservationQueries.GetCharityHistoryWithBusinessAsync(
+            charityId,
+            businessId,
+            cancellationToken);
+
+        return Ok(result);
+    }
 }

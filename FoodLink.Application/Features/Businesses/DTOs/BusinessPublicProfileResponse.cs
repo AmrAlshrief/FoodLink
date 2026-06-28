@@ -7,6 +7,7 @@ public class BusinessPublicProfileResponse
     public string BusinessName { get; set; } = string.Empty;
     public string BusinessType { get; set; } = string.Empty;
     public string Address { get; set; } = string.Empty;
+    public string Phone { get; set; } = string.Empty;
     public string? ProfileImage { get; set; }
 
     // stats

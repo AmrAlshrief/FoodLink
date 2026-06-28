@@ -5,12 +5,12 @@ namespace FoodLink.Application.Features.Reviews.Interfaces;
 
 public interface IReviewQueries
 {
-    Task<PagedResponse<ReviewResponse>> GetBusinessReviewsAsync(
+    Task<PagedResponse<GroupedReviewResponse>> GetBusinessReviewsAsync(
         Guid businessId,
         PaginationRequest request,
         CancellationToken cancellationToken = default);
 
-    Task<PagedResponse<ReviewResponse>> GetCharityReviewsAsync(
+    Task<PagedResponse<GroupedReviewResponse>> GetCharityReviewsAsync(
         Guid charityId,
         PaginationRequest request,
         CancellationToken cancellationToken = default);
@@ -23,12 +23,12 @@ public interface IReviewQueries
         Guid charityId,
         CancellationToken cancellationToken = default);
 
-    Task<PagedResponse<ReviewResponse>> GetMyBusinessReviewsAsync(
+    Task<PagedResponse<GroupedReviewResponse>> GetMyBusinessReviewsAsync(
         Guid userId,
         PaginationRequest request,
         CancellationToken cancellationToken = default);
 
-    Task<PagedResponse<ReviewResponse>> GetMyCharityReviewsAsync(
+    Task<PagedResponse<GroupedReviewResponse>> GetMyCharityReviewsAsync(
         Guid userId,
         PaginationRequest request,
         CancellationToken cancellationToken = default);

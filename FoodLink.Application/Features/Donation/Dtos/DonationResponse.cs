@@ -10,7 +10,19 @@ public class DonationResponse
     public DateTimeOffset? ExpiryDate { get; set; }
     public string? ImageUrl { get; set; }
     public string Status { get; set; } = string.Empty;
+    public bool HasPreviousHistory { get; set; }
+    public BusinessSummaryDto Business { get; set; } = default!;
     public List<DonationItemResponse> Items { get; set; } = new();
+}
+
+public class BusinessSummaryDto
+{
+    public Guid Id { get; set; }
+    public string Name { get; set; } = string.Empty;
+    public double AggregateRating { get; set; }
+    public int ReviewCount { get; set; }
+    public bool IsVerified { get; set; }
+    public string? LogoUrl { get; set; }
 }
 
 public class DonationItemResponse

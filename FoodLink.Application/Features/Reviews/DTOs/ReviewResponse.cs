@@ -13,4 +13,6 @@ public class ReviewResponse
     public string Type { get; set; } = string.Empty;
 
     public DateTime CreatedAt { get; set; }
+    
+    public string? ReviewerLogo { get; set; }
 }

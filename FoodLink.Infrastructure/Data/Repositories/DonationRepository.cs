@@ -32,6 +32,7 @@ public class DonationRepository(AppDbContext dbContext) : IDonationRepository
     {
         return await dbContext.Donations
             .Include(d => d.Items)
+            .Include(d => d.BusinessProfile).ThenInclude(b => b.User)
             .FirstOrDefaultAsync(d => d.Id == id, cancellationToken);
     }
 
@@ -40,6 +41,7 @@ public class DonationRepository(AppDbContext dbContext) : IDonationRepository
         var now = DateTime.UtcNow;
         return await dbContext.Donations
             .Include(d => d.Items)
+            .Include(d => d.BusinessProfile).ThenInclude(b => b.User)
             .Where(d => d.ExpiryDate > now)
             .ToListAsync(cancellationToken);
     }
@@ -50,6 +52,7 @@ public class DonationRepository(AppDbContext dbContext) : IDonationRepository
     {
         var donations = await dbContext.Donations
             .Include(d => d.Items)
+            .Include(d => d.BusinessProfile).ThenInclude(b => b.User)
             .Where(d => d.BusinessProfileId == businessId)
             //.OrderByDescending(d => d.CreatedAtUtc)
             .ToListAsync(cancellationToken);
@@ -63,6 +66,7 @@ public class DonationRepository(AppDbContext dbContext) : IDonationRepository
     {
         return await dbContext.Donations
             .Include(d => d.Items)
+            .Include(d => d.BusinessProfile).ThenInclude(b => b.User)
             .Where(d => d.ExpiryDate <= utcNow &&
                 (d.Status == DonationStatus.Available ||
                 d.Status == DonationStatus.PartiallyReserved ||

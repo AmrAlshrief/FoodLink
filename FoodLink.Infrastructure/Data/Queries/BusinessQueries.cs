@@ -20,6 +20,7 @@ public class BusinessQueries(AppDbContext dbContext) : IBusinessQueries
                 BusinessName = b.BusinessName,
                 BusinessType = b.BusinessType,
                 Address = b.Address,
+                Phone = b.User.Phone,
                 ProfileImage = b.User.ProfileImage,
                 TotalDonations = dbContext.Donations.Count(d => d.BusinessProfileId == b.Id),
                 ActiveDonations = dbContext.Donations.Count(d => d.BusinessProfileId == b.Id && 

@@ -16,6 +16,8 @@ public class ReservationResponse
     public int TotalItems { get; set; }
     public int TotalQuantity { get; set; }
 
+    public int? Rating { get; set; }
+    public string? ReviewComment { get; set; }
 }
 
 public class DonationSummaryDto

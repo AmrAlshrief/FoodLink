@@ -6,12 +6,19 @@ using FoodLink.Application.Features.Donations.Dtos;
 using FoodLink.Domain.Common.Exceptions;
 using FoodLink.Domain.Enums;
 
+using FoodLink.Application.Features.Reviews.Interfaces;
+using FoodLink.Application.Features.Reservation.Interfaces;
+using Microsoft.Extensions.Logging;
+
 namespace FoodLink.Application.Features.Donations;
 public class DonationService(
     IDonationRepository donationRepository, 
     IUnitOfWork unitOfWork,
     IImageService imageService,
-    IUserContext userContext) : IDonationService
+    IUserContext userContext,
+    IReviewQueries reviewQueries,
+    IReservationQueries reservationQueries,
+    ILogger<DonationService> logger) : IDonationService
 {
     public async Task<Guid> CreateDonationAsync(CreateDonationRequest request)
     {
@@ -39,6 +46,8 @@ public class DonationService(
         donationRepository.Add(donation);
         await unitOfWork.SaveChangesAsync();
 
+        logger.LogInformation("Donation {DonationId} created by Business {BusinessId}", donation.Id, businessId);
+
         return donation.Id;
     }
 
@@ -46,14 +55,18 @@ public class DonationService(
     {
         var donations = await donationRepository.GetActiveDonationsAsync();
         
-        // Simple manual mapping (No AutoMapper)
-        return donations.Select(MapToResponse).ToList();
+        var responses = new List<DonationResponse>();
+        foreach (var donation in donations)
+        {
+            responses.Add(await MapToResponseAsync(donation));
+        }
+        return responses;
     }
 
     public async Task<DonationResponse?> GetDonationByIdAsync(Guid id)
     {
         var donation = await donationRepository.GetByIdAsync(id);
-        return donation is null ? null : MapToResponse(donation);
+        return donation is null ? null : await MapToResponseAsync(donation);
     }
 
     public async Task UpdateDonationAsync(UpdateDonationRequest request)
@@ -191,7 +204,12 @@ public class DonationService(
                 .ToList();
         }
 
-        return donations.Select(MapToResponse).ToList();
+        var responses = new List<DonationResponse>();
+        foreach (var donation in donations)
+        {
+            responses.Add(await MapToResponseAsync(donation));
+        }
+        return responses;
     }
 
     public async Task CancelDonationAsync(Guid donationId, CancellationToken cancellationToken = default)
@@ -223,8 +241,26 @@ public class DonationService(
         await unitOfWork.SaveChangesAsync(cancellationToken);
     }
 
-    private DonationResponse MapToResponse(FoodLink.Domain.Entities.Donation donation)
+    private async Task<DonationResponse> MapToResponseAsync(FoodLink.Domain.Entities.Donation donation)
     {
+        bool hasHistory = false;
+        var charityId = userContext.CharityProfileId;
+        if (charityId.HasValue && donation.BusinessProfileId != Guid.Empty)
+        {
+            hasHistory = await reservationQueries.HasPastReservationAsync(charityId.Value, donation.BusinessProfileId);
+        }
+
+        var ratingSummary = await reviewQueries.GetBusinessRatingSummaryAsync(donation.BusinessProfileId);
+        var businessSummary = new BusinessSummaryDto
+        {
+            Id = donation.BusinessProfileId,
+            Name = donation.BusinessProfile?.BusinessName ?? string.Empty,
+            AggregateRating = ratingSummary?.AverageRating ?? 0.0,
+            ReviewCount = ratingSummary?.TotalRatings ?? 0,
+            IsVerified = true, // Default to true as per requirements, could be mapped from profile later
+            LogoUrl = donation.BusinessProfile?.User?.ProfileImage
+        };
+
         return new DonationResponse
         {
             Id = donation.Id,
@@ -233,6 +269,8 @@ public class DonationService(
             ExpiryDate = donation.ExpiryDate,
             ImageUrl = donation.ImageUrl,
             Status = donation.Status.ToString(),
+            HasPreviousHistory = hasHistory,
+            Business = businessSummary,
             Items = donation.Items.Select(i => new DonationItemResponse 
             { 
                 Id = i.Id,  
