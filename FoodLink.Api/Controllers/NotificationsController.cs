@@ -25,4 +25,21 @@ public class NotificationsController(INotificationService notificationService) :
         await notificationService.MarkAsReadAsync(id);
         return NoContent();
     }
+
+    [HttpPost("test-trigger")]
+    public async Task<IActionResult> TriggerTestNotification([FromServices] FoodLink.Application.Common.Interfaces.IUserContext userContext)
+    {
+        var userId = userContext.UserId;
+        if (userId == null)
+            return Unauthorized();
+
+        await notificationService.CreateNotificationAsync(
+            userId.Value,
+            "Test Notification",
+            "This is a test notification from the SignalR tester!",
+            "Test"
+        );
+        
+        return Ok(new { message = "Test notification sent successfully!" });
+    }
 }

@@ -61,7 +61,7 @@ public class NotificationService(
             TargetType = notification.TargetType,
             RelatedEntityId = notification.RelatedEntityId,
             IsRead = notification.IsRead,
-            CreatedAt = notification.CreatedAtUtc
+            CreatedAt = DateTime.SpecifyKind(notification.CreatedAtUtc, DateTimeKind.Utc)
         };
     }
 }

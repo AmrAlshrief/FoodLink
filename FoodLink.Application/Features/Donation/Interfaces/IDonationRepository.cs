@@ -10,4 +10,14 @@ public interface IDonationRepository
     void Add(FoodLink.Domain.Entities.Donation donation);
     void Update(FoodLink.Domain.Entities.Donation donation);
     void Remove(FoodLink.Domain.Entities.Donation donation);
+    Task<(List<FoodLink.Domain.Entities.Donation> Items, int TotalCount)> GetDonationsByBusinessIdPagedAsync(
+        Guid businessId,
+        FoodLink.Domain.Enums.DonationScope scope,
+        string? search,
+        FoodLink.Domain.Enums.DonationStatus? status,
+        string? sortBy,
+        string? sortDirection,
+        int page,
+        int pageSize,
+        CancellationToken cancellationToken = default);
 }

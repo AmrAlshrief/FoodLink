@@ -5,13 +5,15 @@ using FoodLink.Application.Features.Reservation.Interfaces;
 using FoodLink.Application.Common.Interfaces.Repositories;
 using FoodLink.Domain.Common.Exceptions;
 using FoodLink.Application.Features.Reviews.DTOs;
+using FoodLink.Application.Features.Notifications.Interfaces;
 
 namespace FoodLink.Application.Features.Reviews.Services;
 
 public class ReviewService(
     IReviewRepository reviewRepository,
     IReservationRepository reservationRepository,
-    IUnitOfWork unitOfWork
+    IUnitOfWork unitOfWork,
+    INotificationService notificationService
 ) : IReviewService
 {
     public async Task CreateReviewAsync(
@@ -87,5 +89,12 @@ public class ReviewService(
             cancellationToken);
 
         await unitOfWork.SaveChangesAsync(cancellationToken);
+
+        await notificationService.CreateNotificationAsync(
+            targetUserId,
+            "New Review",
+            $"You have received a new {request.Rating}-star review.",
+            "Review",
+            reservation.Id);
     }
 }

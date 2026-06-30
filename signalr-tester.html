@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>SignalR Tester</title>
+    <!-- Include SignalR library from CDN -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/microsoft-signalr/8.0.0/signalr.min.js"></script>
+    <style>
+        body { font-family: Arial, sans-serif; padding: 20px; }
+        textarea { width: 100%; max-width: 500px; }
+        button { padding: 10px 20px; margin-right: 10px; cursor: pointer; }
+        #messagesList { background: #f9f9f9; padding: 10px; border: 1px solid #ddd; min-height: 200px; }
+        li { margin-bottom: 5px; list-style-type: none; border-bottom: 1px solid #eee; padding-bottom: 5px; }
+    </style>
+</head>
+<body>
+    <h2>FoodLink WebSocket (SignalR) Tester</h2>
+    <p>Since the hub requires authentication, you need to provide a JWT token first. You can get one by logging in via Swagger.</p>
+    
+    <div>
+        <label><b>JWT Token:</b></label><br>
+        <textarea id="tokenInput" rows="4" placeholder="Paste your JWT token here (without the 'Bearer ' prefix)"></textarea>
+    </div>
+    <br>
+    <button id="connectBtn">Connect to Server</button>
+    <button id="disconnectBtn" disabled>Disconnect</button>
+    
+    <hr>
+    
+    <h3>Notifications Log:</h3>
+    <ul id="messagesList"></ul>
+
+    <script>
+        let connection = null;
+
+        document.getElementById("connectBtn").addEventListener("click", async () => {
+            const token = document.getElementById("tokenInput").value.trim();
+            if (!token) {
+                alert("Please enter a JWT token first!");
+                return;
+            }
+
+            // Create connection builder
+            connection = new signalR.HubConnectionBuilder()
+                .withUrl("http://localhost:5080/notificationHub", {
+                    accessTokenFactory: () => token // Pass the token here
+                })
+                .withAutomaticReconnect()
+                .build();
+
+            // Listen for 'ReceiveNotification' events from the server
+            connection.on("ReceiveNotification", (notification) => {
+                console.log("Notification received:", notification);
+                const li = document.createElement("li");
+                li.innerHTML = `<b>New Notification:</b> <pre>${JSON.stringify(notification, null, 2)}</pre>`;
+                document.getElementById("messagesList").prepend(li);
+            });
+
+            // Start connection
+            try {
+                await connection.start();
+                const li = document.createElement("li");
+                li.textContent = "✅ Connected to SignalR successfully!";
+                li.style.color = "green";
+                document.getElementById("messagesList").prepend(li);
+                
+                document.getElementById("connectBtn").disabled = true;
+                document.getElementById("disconnectBtn").disabled = false;
+            } catch (err) {
+                console.error("Connection error:", err);
+                const li = document.createElement("li");
+                li.textContent = `❌ Connection failed: ${err.toString()}`;
+                li.style.color = "red";
+                document.getElementById("messagesList").prepend(li);
+            }
+        });
+
+        document.getElementById("disconnectBtn").addEventListener("click", async () => {
+            if (connection) {
+                await connection.stop();
+                const li = document.createElement("li");
+                li.textContent = "🛑 Disconnected.";
+                document.getElementById("messagesList").prepend(li);
+                
+                document.getElementById("connectBtn").disabled = false;
+                document.getElementById("disconnectBtn").disabled = true;
+            }
+        });
+    </script>
+</body>
+</html>

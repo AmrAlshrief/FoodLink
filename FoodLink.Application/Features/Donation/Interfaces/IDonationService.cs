@@ -1,3 +1,4 @@
+using FoodLink.Application.Common.Models.Pagination;
 using FoodLink.Application.Features.Donations.Dtos;
 
 namespace FoodLink.Application.Features.Donation.Interfaces;
@@ -11,7 +12,7 @@ public interface IDonationService
     Task RemoveDonationAsync(Guid id);
     Task<List<DonationResponse>> GetAllActiveDonationsAsync();
     Task<DonationResponse?> GetDonationByIdAsync(Guid id);
-    Task<List<DonationResponse>> GetDonationsByBusinessIdAsync(Guid businessId, DonationFilterRequest filter, CancellationToken cancellationToken = default);
+    Task<PagedResponse<DonationResponse>> GetDonationsByBusinessIdAsync(Guid businessId, DonationFilterRequest filter, CancellationToken cancellationToken = default);
     Task CancelDonationAsync(Guid donationId, CancellationToken cancellationToken = default);
     Task HandleExpiredDonationsAsync(CancellationToken cancellationToken = default);
 }

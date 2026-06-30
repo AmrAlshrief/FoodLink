@@ -1,5 +1,6 @@
 using Donation = FoodLink.Domain.Entities.Donation;
 using FoodLink.Application.Common.Interfaces;
+using FoodLink.Application.Common.Models.Pagination;
 using FoodLink.Application.Features.Donation.Interfaces;
 using FoodLink.Application.Common.Interfaces.Repositories;
 using FoodLink.Application.Features.Donations.Dtos;
@@ -189,27 +190,42 @@ public class DonationService(
         await unitOfWork.SaveChangesAsync();
     }
 
-    public async Task<List<DonationResponse>> GetDonationsByBusinessIdAsync(Guid businessId, DonationFilterRequest filter, CancellationToken cancellationToken = default)
+    public async Task<PagedResponse<DonationResponse>> GetDonationsByBusinessIdAsync(Guid businessId, DonationFilterRequest filter, CancellationToken cancellationToken = default)
     {
         if (userContext.BusinessProfileId != businessId || businessId == Guid.Empty)
             throw new DomainException("You are not allowed to view these donations.");
-            
-        var donations = await donationRepository.GetByBusinessIdAsync(businessId);
 
-        if (!string.IsNullOrWhiteSpace(filter.Status) &&
-            Enum.TryParse<DonationStatus>(filter.Status, true, out var status))
+        DonationStatus? parsedStatus = null;
+        if (!string.IsNullOrWhiteSpace(filter.Status) && Enum.TryParse<DonationStatus>(filter.Status, true, out var status))
         {
-            donations = donations
-                .Where(d => d.Status == status)
-                .ToList();
+            parsedStatus = status;
         }
 
+        var (items, totalCount) = await donationRepository.GetDonationsByBusinessIdPagedAsync(
+            businessId,
+            filter.Scope,
+            filter.Search,
+            parsedStatus,
+            filter.SortBy,
+            filter.SortDirection,
+            filter.Page,
+            filter.PageSize,
+            cancellationToken);
+
         var responses = new List<DonationResponse>();
-        foreach (var donation in donations)
+        foreach (var donation in items)
         {
             responses.Add(await MapToResponseAsync(donation));
         }
-        return responses;
+
+        return new PagedResponse<DonationResponse>
+        {
+            Items = responses,
+            Page = filter.Page,
+            PageSize = filter.PageSize,
+            TotalCount = totalCount,
+            TotalPages = (int)Math.Ceiling(totalCount / (double)filter.PageSize)
+        };
     }
 
     public async Task CancelDonationAsync(Guid donationId, CancellationToken cancellationToken = default)
