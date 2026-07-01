@@ -48,6 +48,11 @@ public class BusinessQueries(AppDbContext dbContext) : IBusinessQueries
                 BusinessType = b.BusinessType,
                 Address = b.Address,
                 ProfileImage = b.User.ProfileImage,
+                Email = b.User.Email,
+                Phone = b.User.Phone,
+                IsSuspended = b.User.IsSuspended,
+                AverageRating = b.AverageRating,
+                RatingCount = b.RatingCount,
                 TotalDonations = dbContext.Donations.Count(d => d.BusinessProfileId == b.Id),
                 ActiveDonations = dbContext.Donations.Count(d => d.BusinessProfileId == b.Id && 
                     (d.Status == DonationStatus.Available || d.Status == DonationStatus.PartiallyReserved)),
@@ -57,9 +62,7 @@ public class BusinessQueries(AppDbContext dbContext) : IBusinessQueries
                     .Where(d => d.BusinessProfileId == b.Id)
                     .SelectMany(d => d.Items)
                     .Sum(i => i.TotalQuantity),
-                Email = b.User.Email,
-                Phone = b.User.Phone,
-                IsSuspended = b.User.IsSuspended,
+                
                 CreatedAt = b.CreatedAtUtc,
                 TotalReservationsReceived = dbContext.Reservations.Count(r => r.Donation.BusinessProfileId == b.Id),
                 PickedUpCount = dbContext.Reservations.Count(r => r.Donation.BusinessProfileId == b.Id && r.Status == ReservationStatus.PickedUp),

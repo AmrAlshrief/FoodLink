@@ -9,7 +9,9 @@ public class BusinessPublicProfileResponse
     public string Address { get; set; } = string.Empty;
     public string Phone { get; set; } = string.Empty;
     public string? ProfileImage { get; set; }
-
+    public double AverageRating { get; set; }
+    public int RatingCount { get; set; }
+    
     // stats
     public int TotalDonations { get; set; }
     public int ActiveDonations { get; set; }

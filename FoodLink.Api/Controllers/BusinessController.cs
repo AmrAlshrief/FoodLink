@@ -11,7 +11,7 @@ namespace FoodLink.Api.Controllers;
 [Route("api/[controller]")]
 [ApiController]
 [Authorize]
-public class BusinessesController(IBusinessService businessService, IReviewQueries reviewQueries, IUserContext userContext) : ControllerBase
+public class BusinessController(IBusinessService businessService, IReviewQueries reviewQueries, IUserContext userContext) : ControllerBase
 {
     [HttpGet("{id:guid}")]
     public async Task<ActionResult<BusinessPublicProfileResponse>> GetPublicProfile(Guid id, CancellationToken ct)

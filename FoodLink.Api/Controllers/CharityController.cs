@@ -11,7 +11,7 @@ namespace FoodLink.Api.Controllers;
 [Route("api/[controller]")]
 [ApiController]
 [Authorize]
-public class CharitiesController(ICharityService charityService, IReviewQueries reviewQueries, IUserContext userContext) : ControllerBase
+public class CharityController(ICharityService charityService, IReviewQueries reviewQueries, IUserContext userContext) : ControllerBase
 {
     [HttpGet("{id:guid}")]
     public async Task<ActionResult<CharityPublicProfileResponse>> GetPublicProfile(Guid id, CancellationToken ct)
